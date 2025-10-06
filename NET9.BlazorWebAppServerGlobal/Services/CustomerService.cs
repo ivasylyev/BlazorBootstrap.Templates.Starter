@@ -26,6 +26,25 @@ public class CustomerService : ICustomerService
 
     public async Task<Tuple<IEnumerable<Customer2>, int>> GetCustomersAsync(IEnumerable<FilterItem> filters, int pageNumber, int pageSize, string sortKey, SortDirection sortDirection, CancellationToken cancellationToken = default)
     {
+
+        try
+        {
+            var repository = new TransportRateRepository("Server=S001ITD-0084;Database=mdm_prev;Trusted_Connection=false;User ID=SVT;Password=SVTsrv1!;MultipleActiveResultSets=true;Application Name=mdm-api;Encrypt=False;TrustServerCertificate=True;Max Pool Size=1000;");
+            var rates = await repository.GetTransportRatesAsync();
+
+            foreach (var rate in rates)
+            {
+                Console.WriteLine($"{rate.RateCode} - {rate.ProductGroupName} - {rate.TotalCostTon}");
+            }
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
+       
+
+
         var max = 1000;
         var customers = new List<Customer2>(max);
 
