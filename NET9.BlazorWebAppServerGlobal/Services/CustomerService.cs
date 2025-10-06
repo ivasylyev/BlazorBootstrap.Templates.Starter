@@ -26,16 +26,14 @@ public class CustomerService : ICustomerService
 
     public async Task<Tuple<IEnumerable<TransportRateDto>, int>> GetCustomersAsync(IEnumerable<FilterItem> filters, int pageNumber, int pageSize, string sortKey, SortDirection sortDirection, CancellationToken cancellationToken = default)
     {
-        var max = 1000;
-        var rateDtos = new List<TransportRateDto>(max);
         try
         {
             var repository = new TransportRateRepository("Server=S001ITD-0084;Database=mdm_prev;Trusted_Connection=false;User ID=SVT;Password=SVTsrv1!;MultipleActiveResultSets=true;Application Name=mdm-api;Encrypt=False;TrustServerCertificate=True;Max Pool Size=1000;");
-            var results = await repository.GetRatesByFiltersAsync(
+            var (results, count) = await repository.GetRatesByFiltersAsync(
                 nodeFromNameRu: "тобольск",
                 productGroupName: "каучук"
             );
-            rateDtos = results.ToList();
+            return new(results, count);
         }
         catch (Exception e)
         {
@@ -44,10 +42,10 @@ public class CustomerService : ICustomerService
         }
        
 
+        /*
         // apply filters
         if (filters is not null)
         {
-            filters = filters.ToList();
             if (filters.Any())
             {
                 var parameterExpression = Expression.Parameter(typeof(TransportRateDto)); // second param optional
@@ -61,9 +59,11 @@ public class CustomerService : ICustomerService
                         lambda = lambda.And(ExpressionExtensions.GetExpressionDelegate<TransportRateDto>(parameterExpression, filter)!);
                 }
 
+            filters = filters.ToList();
                 rateDtos = rateDtos.Where(lambda!.Compile()).ToList();
             }
         }
+        */
         /*
         // apply sorting then paging
         if (string.IsNullOrEmpty(sortKey) || sortDirection == SortDirection.None)
@@ -122,6 +122,6 @@ public class CustomerService : ICustomerService
         else
             return new(rateDtos.Skip((pageNumber - 1) * pageSize).Take(pageSize), rateDtos.Count());
         */
-        return new(rateDtos, rateDtos.Count());
+
     }
 }
