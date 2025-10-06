@@ -13,29 +13,29 @@ public class CustomerService : ICustomerService
         _httpClient = httpClient;
     }
 
-    public async Task<IEnumerable<Customer2>> GetCustomersAsync(FilterItem filter, CancellationToken cancellationToken = default)
+    public async Task<IEnumerable<TransportRateDto>> GetCustomersAsync(FilterItem filter, CancellationToken cancellationToken = default)
     {
-        var customers = await _httpClient.GetFromJsonAsync<Customer2[]>("sample-data/customer/customer.json", cancellationToken);
-        if (customers is null)
-            return Enumerable.Empty<Customer2>();
+        var rateDtos = await _httpClient.GetFromJsonAsync<TransportRateDto[]>("sample-data/customer/customer.json", cancellationToken);
+        if (rateDtos is null)
+            return Enumerable.Empty<TransportRateDto>();
 
-        var parameterExpression = Expression.Parameter(typeof(Customer2)); // second param optional
-        var lambda = ExpressionExtensions.GetExpressionDelegate<Customer2>(parameterExpression, filter);
-        return customers.Where(lambda!.Compile()).OrderBy(customer => customer.CustomerName);
+        var parameterExpression = Expression.Parameter(typeof(TransportRateDto)); // second param optional
+        var lambda = ExpressionExtensions.GetExpressionDelegate<TransportRateDto>(parameterExpression, filter);
+        return rateDtos.Where(lambda!.Compile()).OrderBy(rateDto => rateDto.RateCode);
     }
 
-    public async Task<Tuple<IEnumerable<Customer2>, int>> GetCustomersAsync(IEnumerable<FilterItem> filters, int pageNumber, int pageSize, string sortKey, SortDirection sortDirection, CancellationToken cancellationToken = default)
+    public async Task<Tuple<IEnumerable<TransportRateDto>, int>> GetCustomersAsync(IEnumerable<FilterItem> filters, int pageNumber, int pageSize, string sortKey, SortDirection sortDirection, CancellationToken cancellationToken = default)
     {
-
+        var max = 1000;
+        var rateDtos = new List<TransportRateDto>(max);
         try
         {
             var repository = new TransportRateRepository("Server=S001ITD-0084;Database=mdm_prev;Trusted_Connection=false;User ID=SVT;Password=SVTsrv1!;MultipleActiveResultSets=true;Application Name=mdm-api;Encrypt=False;TrustServerCertificate=True;Max Pool Size=1000;");
-            var rates = await repository.GetTransportRatesAsync();
-
-            foreach (var rate in rates)
-            {
-                Console.WriteLine($"{rate.RateCode} - {rate.ProductGroupName} - {rate.TotalCostTon}");
-            }
+            var results = await repository.GetRatesByFiltersAsync(
+                nodeFromNameRu: "тобольск",
+                productGroupName: "каучук"
+            );
+            rateDtos = results.ToList();
         }
         catch (Exception e)
         {
@@ -44,91 +44,84 @@ public class CustomerService : ICustomerService
         }
        
 
-
-        var max = 1000;
-        var customers = new List<Customer2>(max);
-
-        for (var i = 0; i < max; i++) customers.Add(new Customer2(i, $"Name_{i}", $"11-22-33-{i}", $"mail_{i}@gmail.com", $"Address {i}", "123", "Russia"));
-
-
         // apply filters
         if (filters is not null)
         {
             filters = filters.ToList();
             if (filters.Any())
             {
-                var parameterExpression = Expression.Parameter(typeof(Customer2)); // second param optional
-                Expression<Func<Customer2, bool>>? lambda = null;
+                var parameterExpression = Expression.Parameter(typeof(TransportRateDto)); // second param optional
+                Expression<Func<TransportRateDto, bool>>? lambda = null;
 
                 foreach (var filter in filters)
                 {
                     if (lambda is null)
-                        lambda = ExpressionExtensions.GetExpressionDelegate<Customer2>(parameterExpression, filter)!;
+                        lambda = ExpressionExtensions.GetExpressionDelegate<TransportRateDto>(parameterExpression, filter)!;
                     else
-                        lambda = lambda.And(ExpressionExtensions.GetExpressionDelegate<Customer2>(parameterExpression, filter)!);
+                        lambda = lambda.And(ExpressionExtensions.GetExpressionDelegate<TransportRateDto>(parameterExpression, filter)!);
                 }
 
-                customers = customers.Where(lambda!.Compile()).ToList();
+                rateDtos = rateDtos.Where(lambda!.Compile()).ToList();
             }
         }
-
+        /*
         // apply sorting then paging
         if (string.IsNullOrEmpty(sortKey) || sortDirection == SortDirection.None)
         {
-            return new(customers.Skip((pageNumber - 1) * pageSize).Take(pageSize), customers.Count());
+            return new(rateDtos.Skip((pageNumber - 1) * pageSize).Take(pageSize), rateDtos.Count());
         }
         else if (sortKey == "CustomerId")
         {
             if (sortDirection == SortDirection.Ascending)
-                return new(customers.OrderBy(e => e.CustomerId).Skip((pageNumber - 1) * pageSize).Take(pageSize), customers.Count());
+                return new(rateDtos.OrderBy(e => e.CustomerId).Skip((pageNumber - 1) * pageSize).Take(pageSize), rateDtos.Count());
             else if (sortDirection == SortDirection.Descending)
-                return new(customers.OrderByDescending(e => e.CustomerId).Skip((pageNumber - 1) * pageSize).Take(pageSize), customers.Count());
+                return new(rateDtos.OrderByDescending(e => e.CustomerId).Skip((pageNumber - 1) * pageSize).Take(pageSize), rateDtos.Count());
         }
         else if (sortKey == "CustomerName")
         {
             if (sortDirection == SortDirection.Ascending)
-                return new(customers.OrderBy(e => e.CustomerName).Skip((pageNumber - 1) * pageSize).Take(pageSize), customers.Count());
+                return new(rateDtos.OrderBy(e => e.CustomerName).Skip((pageNumber - 1) * pageSize).Take(pageSize), rateDtos.Count());
             else if (sortDirection == SortDirection.Descending)
-                return new(customers.OrderByDescending(e => e.CustomerName).Skip((pageNumber - 1) * pageSize).Take(pageSize), customers.Count());
+                return new(rateDtos.OrderByDescending(e => e.CustomerName).Skip((pageNumber - 1) * pageSize).Take(pageSize), rateDtos.Count());
         }
         else if (sortKey == "Phone")
         {
             if (sortDirection == SortDirection.Ascending)
-                return new(customers.OrderBy(e => e.Phone).Skip((pageNumber - 1) * pageSize).Take(pageSize), customers.Count());
+                return new(rateDtos.OrderBy(e => e.Phone).Skip((pageNumber - 1) * pageSize).Take(pageSize), rateDtos.Count());
             else if (sortDirection == SortDirection.Descending)
-                return new(customers.OrderByDescending(e => e.Phone).Skip((pageNumber - 1) * pageSize).Take(pageSize), customers.Count());
+                return new(rateDtos.OrderByDescending(e => e.Phone).Skip((pageNumber - 1) * pageSize).Take(pageSize), rateDtos.Count());
         }
         else if (sortKey == "Email")
         {
             if (sortDirection == SortDirection.Ascending)
-                return new(customers.OrderBy(e => e.Email).Skip((pageNumber - 1) * pageSize).Take(pageSize), customers.Count());
+                return new(rateDtos.OrderBy(e => e.Email).Skip((pageNumber - 1) * pageSize).Take(pageSize), rateDtos.Count());
             else if (sortDirection == SortDirection.Descending)
-                return new(customers.OrderByDescending(e => e.Email).Skip((pageNumber - 1) * pageSize).Take(pageSize), customers.Count());
+                return new(rateDtos.OrderByDescending(e => e.Email).Skip((pageNumber - 1) * pageSize).Take(pageSize), rateDtos.Count());
         }
         else if (sortKey == "Address")
         {
             if (sortDirection == SortDirection.Ascending)
-                return new(customers.OrderBy(e => e.Address).Skip((pageNumber - 1) * pageSize).Take(pageSize), customers.Count());
+                return new(rateDtos.OrderBy(e => e.Address).Skip((pageNumber - 1) * pageSize).Take(pageSize), rateDtos.Count());
             else if (sortDirection == SortDirection.Descending)
-                return new(customers.OrderByDescending(e => e.Address).Skip((pageNumber - 1) * pageSize).Take(pageSize), customers.Count());
+                return new(rateDtos.OrderByDescending(e => e.Address).Skip((pageNumber - 1) * pageSize).Take(pageSize), rateDtos.Count());
         }
         else if (sortKey == "PostalZip")
         {
             if (sortDirection == SortDirection.Ascending)
-                return new(customers.OrderBy(e => e.PostalZip).Skip((pageNumber - 1) * pageSize).Take(pageSize), customers.Count());
+                return new(rateDtos.OrderBy(e => e.PostalZip).Skip((pageNumber - 1) * pageSize).Take(pageSize), rateDtos.Count());
             else if (sortDirection == SortDirection.Descending)
-                return new(customers.OrderByDescending(e => e.PostalZip).Skip((pageNumber - 1) * pageSize).Take(pageSize), customers.Count());
+                return new(rateDtos.OrderByDescending(e => e.PostalZip).Skip((pageNumber - 1) * pageSize).Take(pageSize), rateDtos.Count());
         }
         else if (sortKey == "Country")
         {
             if (sortDirection == SortDirection.Ascending)
-                return new(customers.OrderBy(e => e.Country).Skip((pageNumber - 1) * pageSize).Take(pageSize), customers.Count());
+                return new(rateDtos.OrderBy(e => e.Country).Skip((pageNumber - 1) * pageSize).Take(pageSize), rateDtos.Count());
             else if (sortDirection == SortDirection.Descending)
-                return new(customers.OrderByDescending(e => e.Country).Skip((pageNumber - 1) * pageSize).Take(pageSize), customers.Count());
+                return new(rateDtos.OrderByDescending(e => e.Country).Skip((pageNumber - 1) * pageSize).Take(pageSize), rateDtos.Count());
         }
         else
-            return new(customers.Skip((pageNumber - 1) * pageSize).Take(pageSize), customers.Count());
-
-        return new(customers, customers.Count());
+            return new(rateDtos.Skip((pageNumber - 1) * pageSize).Take(pageSize), rateDtos.Count());
+        */
+        return new(rateDtos, rateDtos.Count());
     }
 }

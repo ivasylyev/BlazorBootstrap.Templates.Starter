@@ -8,7 +8,7 @@
 
 <p>This component demonstrates showing data.</p>
 
-<Grid TItem="Customer2"
+<Grid TItem="TransportRateDto"
        Class="table table-hover table-bordered table-striped"
        DataProvider="CustomersDataProvider"
        AllowFiltering="true"
@@ -16,26 +16,48 @@
        AllowSorting="true"
        Responsive="true">
 
-    <GridColumn TItem="Customer2" HeaderText="Id" PropertyName="CustomerId" SortString="CustomerId" SortKeySelector="item => item.CustomerId" FilterTextboxWidth="50" HeaderTextAlignment="Alignment.Center" TextAlignment="Alignment.Center">
-        @context.CustomerId
+    <GridColumn TItem="TransportRateDto" HeaderText="Rate Code" PropertyName="RateCode" SortString="RateCode" SortKeySelector="item => item.RateCode">
+        @context.RateCode
     </GridColumn>
-    <GridColumn TItem="Customer2" HeaderText="Customer Name" PropertyName="CustomerName" SortString="CustomerName" SortKeySelector="item => item.CustomerName" FilterTextboxWidth="80">
-        @context.CustomerName
+
+    <GridColumn TItem="TransportRateDto" HeaderText="Is Default" PropertyName="IsDefRate" SortString="IsDefRate" SortKeySelector="item => item.IsDefRate">
+        @context.IsDefRate
     </GridColumn>
-    <GridColumn TItem="Customer2" HeaderText="Phone" PropertyName="Phone" SortString="Phone" SortKeySelector="item => item.Phone" FilterTextboxWidth="100">
-        @context.Phone
+
+    <GridColumn TItem="TransportRateDto" HeaderText="Rate Type" PropertyName="RateTypeName" SortString="RateTypeName" SortKeySelector="item => item.RateTypeName">
+        @context.RateTypeName
     </GridColumn>
-    <GridColumn TItem="Customer2" HeaderText="Email" PropertyName="Email" SortString="Email" SortKeySelector="item => item.Email" FilterTextboxWidth="120">
-        @context.Email
+
+    <GridColumn TItem="TransportRateDto" HeaderText="From (RU)" PropertyName="NodeFromNameRu" SortString="NodeFromNameRu" SortKeySelector="item => item.NodeFromNameRu">
+        @context.NodeFromNameRu
     </GridColumn>
-    <GridColumn TItem="Customer2" HeaderText="Address" PropertyName="Address" SortString="Address" SortKeySelector="item => item.Address" FilterTextboxWidth="150">
-        @context.Address
+
+    <GridColumn TItem="TransportRateDto" HeaderText="To (RU)" PropertyName="NodeToNameRu" SortString="NodeToNameRu" SortKeySelector="item => item.NodeToNameRu">
+        @context.NodeToNameRu
     </GridColumn>
-    <GridColumn TItem="Customer2" HeaderText="Postal Zip" PropertyName="PostalZip" SortString="PostalZip" SortKeySelector="item => item.PostalZip" FilterTextboxWidth="80">
-        @context.PostalZip
+
+    <GridColumn TItem="TransportRateDto" HeaderText="Proxy (RU)" PropertyName="ProxyNodeNameRu" SortString="ProxyNodeNameRu" SortKeySelector="item => item.ProxyNodeNameRu">
+        @context.ProxyNodeNameRu
     </GridColumn>
-    <GridColumn TItem="Customer2" HeaderText="Country" PropertyName="Country" SortString="Country" SortKeySelector="item => item.Country" FilterTextboxWidth="80">
-        @context.Country
+
+    <GridColumn TItem="TransportRateDto" HeaderText="Product Group" PropertyName="ProductGroupName" SortString="ProductGroupName" SortKeySelector="item => item.ProductGroupName">
+        @context.ProductGroupName
+    </GridColumn>
+
+    <GridColumn TItem="TransportRateDto" HeaderText="Start Date" PropertyName="StartDate" SortString="StartDate" SortKeySelector="item => item.StartDate">
+        @context.StartDate.ToShortDateString()
+    </GridColumn>
+
+    <GridColumn TItem="TransportRateDto" HeaderText="End Date" PropertyName="EndDate" SortString="EndDate" SortKeySelector="item => item.EndDate">
+        @(context.EndDate?.ToShortDateString() ?? "")
+    </GridColumn>
+
+    <GridColumn TItem="TransportRateDto" HeaderText="Currency" PropertyName="CurrencyCode" SortString="CurrencyCode" SortKeySelector="item => item.CurrencyCode">
+        @context.CurrencyCode
+    </GridColumn>
+
+    <GridColumn TItem="TransportRateDto" HeaderText="Cost / Ton" PropertyName="TotalCostTon" SortString="TotalCostTon" SortKeySelector="item => item.TotalCostTon">
+        @context.TotalCostTon
     </GridColumn>
 
 </Grid>
@@ -44,7 +66,7 @@
 @code {
     [Inject] public ICustomerService _customerService { get; set; } = default!;
 
-    private async Task<GridDataProviderResult<Customer2>> CustomersDataProvider(GridDataProviderRequest<Customer2> request)
+    private async Task<GridDataProviderResult<TransportRateDto>> CustomersDataProvider(GridDataProviderRequest<TransportRateDto> request)
     {
         string sortString = "";
         SortDirection sortDirection = SortDirection.None;
@@ -56,6 +78,10 @@
             sortDirection = request.Sorting.FirstOrDefault()!.SortDirection;
         }
         var result = await _customerService.GetCustomersAsync(request.Filters, request.PageNumber, request.PageSize, sortString, sortDirection, request.CancellationToken);
-        return await Task.FromResult(new GridDataProviderResult<Customer2> { Data = result.Item1, TotalCount = result.Item2 });
+        return await Task.FromResult(new GridDataProviderResult<TransportRateDto>
+        {
+            Data = result.Item1, 
+            TotalCount = result.Item2
+        });
     }
 }

@@ -2,6 +2,7 @@
 using NET9.BlazorWebAppServerGlobal.Models;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Data.SqlClient;
 using System.Threading.Tasks;
 
@@ -17,6 +18,35 @@ namespace NET9.BlazorWebAppServerGlobal.Services
         {
             _connectionString = connectionString;
         }
+
+
+        public async Task<IEnumerable<TransportRateDto>> GetRatesByFiltersAsync(
+            string nodeFromNameEn = null,
+            string nodeFromNameRu = null,
+            string proxyNodeNameEn = null,
+            string proxyNodeNameRu = null,
+            string nodeToNameEn = null,
+            string nodeToNameRu = null,
+            string rateTypeName = null,
+            string productGroupName = null)
+        {
+            var parameters = new DynamicParameters();
+            parameters.Add("@NodeFromNameEn", nodeFromNameEn);
+            parameters.Add("@NodeFromNameRu", nodeFromNameRu);
+            parameters.Add("@ProxyNodeNameEn", proxyNodeNameEn);
+            parameters.Add("@ProxyNodeNameRu", proxyNodeNameRu);
+            parameters.Add("@NodeToNameEn", nodeToNameEn);
+            parameters.Add("@NodeToNameRu", nodeToNameRu);
+            parameters.Add("@RateTypeName", rateTypeName);
+            parameters.Add("@ProductGroupName", productGroupName);
+
+            using var connection = new SqlConnection(_connectionString);
+            return await connection.QueryAsync<TransportRateDto>(
+                "dbo.GetTransportRatesByFilters",
+                parameters,
+                commandType: CommandType.StoredProcedure);
+        }
+
 
         public async Task<IEnumerable<TransportRateDto>> GetTransportRatesAsync(
             string nodeFromNameEn = null,
