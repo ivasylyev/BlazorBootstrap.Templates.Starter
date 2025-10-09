@@ -24,14 +24,18 @@ public class CustomerService : ICustomerService
         return rateDtos.Where(lambda!.Compile()).OrderBy(rateDto => rateDto.RateCode);
     }
 
-    public async Task<Tuple<IEnumerable<TransportRateDto>, int>> GetCustomersAsync(IEnumerable<FilterItem> filters, int pageNumber, int pageSize, string sortKey, SortDirection sortDirection, CancellationToken cancellationToken = default)
+    public async Task<Tuple<IEnumerable<TransportRateDto>, int>> GetCustomersAsync(IEnumerable<FilterItem> filters, int pageNumber, int pageSize, string? sortKey, SortDirection sortDirection, CancellationToken cancellationToken = default)
     {
         try
         {
             var repository = new TransportRateRepository("Server=S001ITD-0084;Database=mdm_prev;Trusted_Connection=false;User ID=SVT;Password=SVTsrv1!;MultipleActiveResultSets=true;Application Name=mdm-api;Encrypt=False;TrustServerCertificate=True;Max Pool Size=1000;");
             var (results, count) = await repository.GetRatesByFiltersAsync(
-                nodeFromNameRu: "тобольск",
-                productGroupName: "каучук"
+                pageNumber:pageNumber,
+                pageSize:pageSize,
+                sortKey:sortKey,
+                sortDirection:sortDirection == SortDirection.Descending?"DESC":"ASC"
+                // nodeFromNameRu: "тобольск",
+               // productGroupName: "каучук"
             );
             return new(results, count);
         }

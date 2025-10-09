@@ -22,6 +22,10 @@ namespace NET9.BlazorWebAppServerGlobal.Services
       
 
         public async Task<(List<TransportRateDto> Items, int TotalCount)> GetRatesByFiltersAsync(
+            int pageNumber, 
+            int pageSize,
+            string? sortKey, 
+            string? sortDirection,
             string? nodeFromNameEn = null, 
             string? nodeFromNameRu = null,
             string? proxyNodeNameEn = null,
@@ -35,6 +39,11 @@ namespace NET9.BlazorWebAppServerGlobal.Services
             await connection.OpenAsync();
 
             var parameters = new DynamicParameters();
+            parameters.Add("PageNumber", pageNumber);
+            parameters.Add("PageSize", pageSize);
+            parameters.Add("SortKey", sortKey);
+            parameters.Add("SortDirection", sortDirection);
+            parameters.Add("PageNumber", pageNumber);
             parameters.Add("NodeFromNameEn", nodeFromNameEn);
             parameters.Add("NodeFromNameRu", nodeFromNameRu);
             parameters.Add("ProxyNodeNameEn", proxyNodeNameEn);
