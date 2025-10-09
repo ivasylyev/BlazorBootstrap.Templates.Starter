@@ -1,5 +1,6 @@
-using BlazorBootstrap.Demo.RCL;
+
 using NET9.BlazorWebAppServerGlobal.Components;
+using NET9.BlazorWebAppServerGlobal.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -9,7 +10,8 @@ builder.Services.AddRazorComponents()
 
 builder.Services.AddHttpClient();
 builder.Services.AddBlazorBootstrap();
-builder.Services.AddDemoServices();
+builder.Services.AddScoped<ICustomerService, CustomerService>();
+
 
 var app = builder.Build();
 

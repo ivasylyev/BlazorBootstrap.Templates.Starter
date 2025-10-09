@@ -177,7 +177,7 @@ BEGIN
     -- Подсчёт общего количества
     SET @sqlCount = '
     SELECT COUNT(1) AS TotalCount
-    ' + @joins + CHAR(10) + @where + ';
+    ' + @joinsCount + CHAR(10) + @where + ';
     ';
 
     

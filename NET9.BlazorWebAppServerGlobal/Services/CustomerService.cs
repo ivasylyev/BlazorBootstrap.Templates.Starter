@@ -1,35 +1,23 @@
-﻿using System.Linq.Expressions;
+﻿using System.Data;
+using System.Data.SqlClient;
+using System.Linq.Expressions;
 using BlazorBootstrap;
+using Dapper;
 using NET9.BlazorWebAppServerGlobal.Models;
 
 namespace NET9.BlazorWebAppServerGlobal.Services;
 
 public class CustomerService : ICustomerService
 {
-    private readonly HttpClient _httpClient;
+  
+    private readonly string _connectionString = "Server=S001ITD-0084;Database=mdm_prev;Trusted_Connection=false;User ID=SVT;Password=SVTsrv1!;MultipleActiveResultSets=true;Application Name=mdm-api;Encrypt=False;TrustServerCertificate=True;Max Pool Size=1000;";
 
-    public CustomerService(HttpClient httpClient)
-    {
-        _httpClient = httpClient;
-    }
-
-    public async Task<IEnumerable<TransportRateDto>> GetCustomersAsync(FilterItem filter, CancellationToken cancellationToken = default)
-    {
-        var rateDtos = await _httpClient.GetFromJsonAsync<TransportRateDto[]>("sample-data/customer/customer.json", cancellationToken);
-        if (rateDtos is null)
-            return Enumerable.Empty<TransportRateDto>();
-
-        var parameterExpression = Expression.Parameter(typeof(TransportRateDto)); // second param optional
-        var lambda = ExpressionExtensions.GetExpressionDelegate<TransportRateDto>(parameterExpression, filter);
-        return rateDtos.Where(lambda!.Compile()).OrderBy(rateDto => rateDto.RateCode);
-    }
-
+    
     public async Task<Tuple<IEnumerable<TransportRateDto>, int>> GetCustomersAsync(IEnumerable<FilterItem> filters, int pageNumber, int pageSize, string? sortKey, SortDirection sortDirection, CancellationToken cancellationToken = default)
     {
         try
         {
-            var repository = new TransportRateRepository("Server=S001ITD-0084;Database=mdm_prev;Trusted_Connection=false;User ID=SVT;Password=SVTsrv1!;MultipleActiveResultSets=true;Application Name=mdm-api;Encrypt=False;TrustServerCertificate=True;Max Pool Size=1000;");
-            var (results, count) = await repository.GetRatesByFiltersAsync(
+            var (results, count) = await GetRatesByFiltersAsync(
                 pageNumber:pageNumber,
                 pageSize:pageSize,
                 sortKey:sortKey,
@@ -128,4 +116,48 @@ public class CustomerService : ICustomerService
         */
 
     }
+
+    public async Task<(List<TransportRateDto> Items, int TotalCount)> GetRatesByFiltersAsync(
+        int pageNumber,
+        int pageSize,
+        string? sortKey,
+        string? sortDirection,
+        string? nodeFromNameEn = null,
+        string? nodeFromNameRu = null,
+        string? proxyNodeNameEn = null,
+        string? proxyNodeNameRu = null,
+        string? nodeToNameEn = null,
+        string? nodeToNameRu = null,
+        string? rateTypeName = null,
+        string? productGroupName = null)
+    {
+        using var connection = new SqlConnection(_connectionString);
+        await connection.OpenAsync();
+
+        var parameters = new DynamicParameters();
+        parameters.Add("PageNumber", pageNumber);
+        parameters.Add("PageSize", pageSize);
+        parameters.Add("SortKey", sortKey);
+        parameters.Add("SortDirection", sortDirection);
+        parameters.Add("PageNumber", pageNumber);
+        parameters.Add("NodeFromNameEn", nodeFromNameEn);
+        parameters.Add("NodeFromNameRu", nodeFromNameRu);
+        parameters.Add("ProxyNodeNameEn", proxyNodeNameEn);
+        parameters.Add("ProxyNodeNameRu", proxyNodeNameRu);
+        parameters.Add("NodeToNameEn", nodeToNameEn);
+        parameters.Add("NodeToNameRu", nodeToNameRu);
+        parameters.Add("RateTypeName", rateTypeName);
+        parameters.Add("ProductGroupName", productGroupName);
+
+        using var multi = await connection.QueryMultipleAsync(
+            "dbo.GetTransportRatesByFilters",
+            parameters,
+            commandType: CommandType.StoredProcedure);
+
+        var rates = (await multi.ReadAsync<TransportRateDto>()).ToList();
+        var count = (await multi.ReadFirstOrDefaultAsync<TransportRateCountDto>())?.TotalCount ?? 0;
+
+        return (rates, count);
+    }
+
 }
