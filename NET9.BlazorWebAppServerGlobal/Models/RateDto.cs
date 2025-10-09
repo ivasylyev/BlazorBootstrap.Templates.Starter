@@ -1,6 +1,6 @@
 ﻿namespace NET9.BlazorWebAppServerGlobal.Models
 {
-    public class TransportRateDto
+    public class RateDto
     {
         public string? RateCode { get; set; }
         public bool IsDefRate { get; set; }

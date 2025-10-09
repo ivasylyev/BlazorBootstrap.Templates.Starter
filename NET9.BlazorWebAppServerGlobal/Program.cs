@@ -10,7 +10,7 @@ builder.Services.AddRazorComponents()
 
 builder.Services.AddHttpClient();
 builder.Services.AddBlazorBootstrap();
-builder.Services.AddScoped<ICustomerService, CustomerService>();
+builder.Services.AddScoped<IRatesService, RatesService>();
 
 
 var app = builder.Build();

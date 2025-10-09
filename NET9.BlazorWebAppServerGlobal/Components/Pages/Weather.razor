@@ -8,7 +8,7 @@
 
 <p>This component demonstrates showing data.</p>
 
-<Grid TItem="TransportRateDto"
+<Grid TItem="RateDto"
        Class="table table-hover table-bordered table-striped"
        DataProvider="CustomersDataProvider"
        AllowFiltering="true"
@@ -16,47 +16,47 @@
        AllowSorting="true"
        Responsive="true">
 
-    <GridColumn TItem="TransportRateDto" HeaderText="Code" PropertyName="RateCode" SortString="RateCode" SortKeySelector="item => item.RateCode">
+    <GridColumn TItem="RateDto" HeaderText="Code" PropertyName="RateCode" SortString="RateCode" SortKeySelector="item => item.RateCode">
         @context.RateCode
     </GridColumn>
 
-    <GridColumn TItem="TransportRateDto" HeaderText="Дефлятор" PropertyName="IsDefRate" SortString="IsDefRate" SortKeySelector="item => item.IsDefRate">
+    <GridColumn TItem="RateDto" HeaderText="Дефлятор" PropertyName="IsDefRate" SortString="IsDefRate" SortKeySelector="item => item.IsDefRate">
         @context.IsDefRate
     </GridColumn>
 
-    <GridColumn TItem="TransportRateDto" HeaderText="Тип ставки" PropertyName="RateTypeName" SortString="RateTypeName" SortKeySelector="item => item.RateTypeName">
+    <GridColumn TItem="RateDto" HeaderText="Тип ставки" PropertyName="RateTypeName" SortString="RateTypeName" SortKeySelector="item => item.RateTypeName">
         @context.RateTypeName
     </GridColumn>
 
-    <GridColumn TItem="TransportRateDto" HeaderText="Отправление" PropertyName="NodeFromNameRu" SortString="NodeFromNameRu" SortKeySelector="item => item.NodeFromNameRu">
+    <GridColumn TItem="RateDto" HeaderText="Отправление" PropertyName="NodeFromNameRu" SortString="NodeFromNameRu" SortKeySelector="item => item.NodeFromNameRu">
         @context.NodeFromNameRu
     </GridColumn>
 
-    <GridColumn TItem="TransportRateDto" HeaderText="Промежуточный" PropertyName="ProxyNodeNameRu" SortString="ProxyNodeNameRu" SortKeySelector="item => item.ProxyNodeNameRu">
+    <GridColumn TItem="RateDto" HeaderText="Промежуточный" PropertyName="ProxyNodeNameRu" SortString="ProxyNodeNameRu" SortKeySelector="item => item.ProxyNodeNameRu">
         @context.ProxyNodeNameRu
     </GridColumn>
 
-    <GridColumn TItem="TransportRateDto" HeaderText="Назначение" PropertyName="NodeToNameRu" SortString="NodeToNameRu" SortKeySelector="item => item.NodeToNameRu">
+    <GridColumn TItem="RateDto" HeaderText="Назначение" PropertyName="NodeToNameRu" SortString="NodeToNameRu" SortKeySelector="item => item.NodeToNameRu">
         @context.NodeToNameRu
     </GridColumn>
 
-    <GridColumn TItem="TransportRateDto" HeaderText="Группа продуктов" PropertyName="ProductGroupName" SortString="ProductGroupName" SortKeySelector="item => item.ProductGroupName">
+    <GridColumn TItem="RateDto" HeaderText="Группа продуктов" PropertyName="ProductGroupName" SortString="ProductGroupName" SortKeySelector="item => item.ProductGroupName">
         @context.ProductGroupName
     </GridColumn>
 
-    <GridColumn TItem="TransportRateDto" HeaderText="Начало" PropertyName="StartDate" SortString="StartDate" SortKeySelector="item => item.StartDate">
+    <GridColumn TItem="RateDto" HeaderText="Начало" PropertyName="StartDate" SortString="StartDate" SortKeySelector="item => item.StartDate">
         @context.StartDate.ToShortDateString()
     </GridColumn>
 
-    <GridColumn TItem="TransportRateDto" HeaderText="Окончание" PropertyName="EndDate" SortString="EndDate" SortKeySelector="item => item.EndDate">
+    <GridColumn TItem="RateDto" HeaderText="Окончание" PropertyName="EndDate" SortString="EndDate" SortKeySelector="item => item.EndDate">
         @(context.EndDate?.ToShortDateString() ?? "")
     </GridColumn>
 
-    <GridColumn TItem="TransportRateDto" HeaderText="Валюта" PropertyName="CurrencyCode" SortString="CurrencyCode" SortKeySelector="item => item.CurrencyCode">
+    <GridColumn TItem="RateDto" HeaderText="Валюта" PropertyName="CurrencyCode" SortString="CurrencyCode" SortKeySelector="item => item.CurrencyCode">
         @context.CurrencyCode
     </GridColumn>
 
-    <GridColumn TItem="TransportRateDto" HeaderText="За тонну" PropertyName="TotalCostTon" SortString="TotalCostTon" SortKeySelector="item => item.TotalCostTon">
+    <GridColumn TItem="RateDto" HeaderText="За тонну" PropertyName="TotalCostTon" SortString="TotalCostTon" SortKeySelector="item => item.TotalCostTon">
         @context.TotalCostTon
     </GridColumn>
 
@@ -64,9 +64,9 @@
 
 
 @code {
-    [Inject] public ICustomerService _customerService { get; set; } = default!;
+    [Inject] public IRatesService RatesService { get; set; } = default!;
 
-    private async Task<GridDataProviderResult<TransportRateDto>> CustomersDataProvider(GridDataProviderRequest<TransportRateDto> request)
+    private async Task<GridDataProviderResult<RateDto>> CustomersDataProvider(GridDataProviderRequest<RateDto> request)
     {
         string? sortString = null;
         SortDirection sortDirection = SortDirection.None;
@@ -77,8 +77,8 @@
             sortString = request.Sorting.FirstOrDefault()!.SortString;
             sortDirection = request.Sorting.FirstOrDefault()!.SortDirection;
         }
-        var result = await _customerService.GetCustomersAsync(request.Filters, request.PageNumber, request.PageSize, sortString, sortDirection, request.CancellationToken);
-        return await Task.FromResult(new GridDataProviderResult<TransportRateDto>
+        var result = await RatesService.GetCustomersAsync(request.Filters, request.PageNumber, request.PageSize, sortString, sortDirection, request.CancellationToken);
+        return await Task.FromResult(new GridDataProviderResult<RateDto>
         {
             Data = result.Item1, 
             TotalCount = result.Item2

@@ -7,13 +7,13 @@ using NET9.BlazorWebAppServerGlobal.Models;
 
 namespace NET9.BlazorWebAppServerGlobal.Services;
 
-public class CustomerService : ICustomerService
+public class RatesService : IRatesService
 {
   
     private readonly string _connectionString = "Server=S001ITD-0084;Database=mdm_prev;Trusted_Connection=false;User ID=SVT;Password=SVTsrv1!;MultipleActiveResultSets=true;Application Name=mdm-api;Encrypt=False;TrustServerCertificate=True;Max Pool Size=1000;";
 
     
-    public async Task<Tuple<IEnumerable<TransportRateDto>, int>> GetCustomersAsync(IEnumerable<FilterItem> filters, int pageNumber, int pageSize, string? sortKey, SortDirection sortDirection, CancellationToken cancellationToken = default)
+    public async Task<Tuple<IEnumerable<RateDto>, int>> GetCustomersAsync(IEnumerable<FilterItem> filters, int pageNumber, int pageSize, string? sortKey, SortDirection sortDirection, CancellationToken cancellationToken = default)
     {
         try
         {
@@ -117,7 +117,7 @@ public class CustomerService : ICustomerService
 
     }
 
-    public async Task<(List<TransportRateDto> Items, int TotalCount)> GetRatesByFiltersAsync(
+    public async Task<(List<RateDto> Items, int TotalCount)> GetRatesByFiltersAsync(
         int pageNumber,
         int pageSize,
         string? sortKey,
@@ -154,8 +154,8 @@ public class CustomerService : ICustomerService
             parameters,
             commandType: CommandType.StoredProcedure);
 
-        var rates = (await multi.ReadAsync<TransportRateDto>()).ToList();
-        var count = (await multi.ReadFirstOrDefaultAsync<TransportRateCountDto>())?.TotalCount ?? 0;
+        var rates = (await multi.ReadAsync<RateDto>()).ToList();
+        var count = (await multi.ReadFirstOrDefaultAsync<RateCountDto>())?.TotalCount ?? 0;
 
         return (rates, count);
     }
