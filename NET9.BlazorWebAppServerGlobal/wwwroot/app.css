@@ -11,3 +11,6 @@ h1:focus {
     .blazor-error-boundary::after {
         content: "An error has occurred."
     }
+.bb-grid-filter-operator {
+    display: none !important;
+}

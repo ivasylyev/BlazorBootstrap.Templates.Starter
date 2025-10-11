@@ -31,6 +31,9 @@
     <GridColumn TItem="RateDto" HeaderText="Отправление" PropertyName="NodeFromNameRu" SortString="NodeFromNameRu" SortKeySelector="item => item.NodeFromNameRu">
         @context.NodeFromNameRu
     </GridColumn>
+    
+
+
 
     <GridColumn TItem="RateDto" HeaderText="Промежуточный" PropertyName="ProxyNodeNameRu" SortString="ProxyNodeNameRu" SortKeySelector="item => item.ProxyNodeNameRu">
         @context.ProxyNodeNameRu
@@ -65,6 +68,9 @@
 
 @code {
     [Inject] public IRatesService RatesService { get; set; } = default!;
+
+    private string? nameFilterOperator = "contains";
+    private string? nameFilterValue;
 
     private async Task<GridDataProviderResult<RateDto>> CustomersDataProvider(GridDataProviderRequest<RateDto> request)
     {

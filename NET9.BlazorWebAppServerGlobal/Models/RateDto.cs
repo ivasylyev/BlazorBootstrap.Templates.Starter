@@ -19,6 +19,9 @@
         public string? NodeToNameEn { get; set; }
         public string? NodeToNameRu { get; set; }
 
+        public string? TransportKindNameRu { get; set; }
+        public string? TransportTypeNameRu { get; set; }
+
         public DateTime StartDate { get; set; }
         public DateTime? EndDate { get; set; }
         public DateTime CreationDate { get; set; }

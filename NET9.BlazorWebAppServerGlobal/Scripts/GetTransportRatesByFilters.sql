@@ -1,8 +1,7 @@
-use mdm_prev
+USE mdm
 GO
 
-
-  CREATE OR ALTER PROCEDURE dbo.GetTransportRatesByFilters
+CREATE OR ALTER PROCEDURE dbo.GetTransportRatesByFilters
     @PageNumber INT = 1,
     @PageSize INT = 20,
 
@@ -17,191 +16,192 @@ GO
     @NodeToNameRu NVARCHAR(100) = NULL,
     @RateTypeName NVARCHAR(100) = NULL,
     @ProductGroupName NVARCHAR(100) = NULL
-
-
 AS
 BEGIN
     SET NOCOUNT ON;
 
-    DECLARE 
-        @sql NVARCHAR(MAX) = '',
-        @sqlCount NVARCHAR(MAX) = '',
-        @where NVARCHAR(MAX) = 'WHERE 1=1',
-        @order NVARCHAR(MAX) = ' r.Code DESC',
-        @joins NVARCHAR(MAX),
-        @joinsCount  NVARCHAR(MAX),
-        @Offset INT;
+    -- Очищаем параметры
+    SET @NodeFromNameEn    = ISNULL(LTRIM(RTRIM(@NodeFromNameEn)), '');
+    SET @NodeFromNameRu    = ISNULL(LTRIM(RTRIM(@NodeFromNameRu)), '');
+    SET @ProxyNodeNameEn   = ISNULL(LTRIM(RTRIM(@ProxyNodeNameEn)), '');
+    SET @ProxyNodeNameRu   = ISNULL(LTRIM(RTRIM(@ProxyNodeNameRu)), '');
+    SET @NodeToNameEn      = ISNULL(LTRIM(RTRIM(@NodeToNameEn)), '');
+    SET @NodeToNameRu      = ISNULL(LTRIM(RTRIM(@NodeToNameRu)), '');
+    SET @RateTypeName      = ISNULL(LTRIM(RTRIM(@RateTypeName)), '');
+    SET @ProductGroupName  = ISNULL(LTRIM(RTRIM(@ProductGroupName)), '');
 
-    -- Очистка параметров от пробелов
-    SET @NodeFromNameEn    = LTRIM(RTRIM(@NodeFromNameEn));
-    SET @NodeFromNameRu    = LTRIM(RTRIM(@NodeFromNameRu));
-    SET @ProxyNodeNameEn   = LTRIM(RTRIM(@ProxyNodeNameEn));
-    SET @ProxyNodeNameRu   = LTRIM(RTRIM(@ProxyNodeNameRu));
-    SET @NodeToNameEn      = LTRIM(RTRIM(@NodeToNameEn));
-    SET @NodeToNameRu      = LTRIM(RTRIM(@NodeToNameRu));
-    SET @RateTypeName      = LTRIM(RTRIM(@RateTypeName));
-    SET @ProductGroupName  = LTRIM(RTRIM(@ProductGroupName));
-
-    -- Параметры OFFSET
     SET @PageNumber = IIF(@PageNumber < 1, 1, @PageNumber);
     SET @PageSize = IIF(@PageSize < 1, 20, @PageSize);
-    SET @Offset = (@PageNumber - 1) * @PageSize;
 
+    DECLARE
+        @Offset INT = (@PageNumber - 1) * @PageSize,
+        @CTEs NVARCHAR(MAX) = '',
+        @Joins NVARCHAR(MAX) = '',
+        @sqlMain NVARCHAR(MAX),
+        @sqlCount NVARCHAR(MAX),
+        @both_sql NVARCHAR(MAX);
 
-     SET @joinsCount = '
-    FROM vw_TransportRate r (NOLOCK)
-    '
+   
 
- 
-  
-
-
-    -- CONTAINS filters
-    IF ISNULL(@NodeFromNameEn, '') <> '' OR  ISNULL(@NodeFromNameEn, '') <> ''
+    IF @NodeFromNameRu <> ''
     BEGIN
-        SET @joinsCount += ' JOIN PrimitiveEntityData_1014 nf (NOLOCK) ON r.NodeFrom = nf.PrimitiveEntityItemId 
-        ';   
-    END
-    IF ISNULL(@NodeFromNameEn, '') <> ''
-    BEGIN
-        SET @joinsCount += ' JOIN PrimitiveEntityData_1014 nf (NOLOCK) ON r.NodeFrom = nf.PrimitiveEntityItemId 
-        ';
-        SET @where += ' AND CONTAINS(nf.a_2123, @NodeFromNameEn)';
-        SET @NodeFromNameEn = '"' + @NodeFromNameEn + '*"';
-    END
-
-    IF ISNULL(@NodeFromNameRu, '') <> ''
-    BEGIN
-        SET @where += ' AND CONTAINS(nf.a_1020, @NodeFromNameRu)';
-        SET @NodeFromNameRu = '"' + @NodeFromNameRu + '*"';
+        SET @CTEs += ', 
+        FilteredNodeFromRu AS (
+            SELECT Id
+            FROM [mdm].[dbo].[TransportRateSnapshot] (NOLOCK)
+            WHERE CONTAINS(NodeFromNameRu, N''"' + @NodeFromNameRu + '*"'')
+            AND StateId = 1
+        )';
+        SET @Joins += '
+        INNER JOIN FilteredNodeFromRu fnfr ON fnfr.Id = tr.Id';
     END
 
-    IF ISNULL(@ProxyNodeNameEn, '') <> '' OR  ISNULL(@ProxyNodeNameRu, '') <> ''
+    IF @NodeFromNameEn <> ''
     BEGIN
-        SET @joinsCount += ' LEFT JOIN PrimitiveEntityData_1014 np (NOLOCK) ON r.ProxyNode = np.PrimitiveEntityItemId 
-        '   
-    END
-    IF ISNULL(@ProxyNodeNameEn, '') <> ''
-    BEGIN
-        SET @where += ' AND CONTAINS(np.a_2123, @ProxyNodeNameEn)';
-        SET @ProxyNodeNameEn = '"' + @ProxyNodeNameEn + '*"';
+        SET @CTEs += ', 
+        FilteredNodeFromEn AS (
+            SELECT Id
+            FROM [mdm].[dbo].[TransportRateSnapshot] (NOLOCK)
+            WHERE CONTAINS(NodeFromNameEn, N''"' + @NodeFromNameEn + '*"'')
+            AND StateId = 1
+        )';
+        SET @Joins +=  '
+        INNER JOIN FilteredNodeFromEn fnfe ON fnfe.Id = tr.Id';
     END
 
-    IF ISNULL(@ProxyNodeNameRu, '') <> ''
+    IF @ProxyNodeNameEn <> ''
     BEGIN
-        SET @where += ' AND CONTAINS(np.a_1020, @ProxyNodeNameRu)';
-        SET @ProxyNodeNameRu = '"' + @ProxyNodeNameRu + '*"';
+        SET @CTEs += ', 
+        FilteredProxyNodeEn AS (
+            SELECT Id
+            FROM [mdm].[dbo].[TransportRateSnapshot] (NOLOCK)
+            WHERE CONTAINS(ProxyNodeNameEn, N''"' + @ProxyNodeNameEn + '*"'')
+            AND StateId = 1
+        )';
+        SET @Joins += '
+        INNER JOIN FilteredProxyNodeEn fpne ON fpne.Id = tr.Id';
     END
+
+    IF @ProxyNodeNameRu <> ''
+    BEGIN
+        SET @CTEs += ', 
+        FilteredProxyNodeRu AS (
+            SELECT Id
+            FROM [mdm].[dbo].[TransportRateSnapshot] (NOLOCK)
+            WHERE CONTAINS(ProxyNodeNameRu, N''"' + @ProxyNodeNameRu + '*"'')
+            AND StateId = 1
+        )';
+        SET @Joins += '
+        INNER JOIN FilteredProxyNodeRu fpnr ON fpnr.Id = tr.Id';
+    END
+
+    IF @NodeToNameEn <> ''
+    BEGIN
+        SET @CTEs += ', 
+        FilteredNodeToEn AS (
+            SELECT Id
+            FROM [mdm].[dbo].[TransportRateSnapshot] (NOLOCK)
+            WHERE CONTAINS(NodeToNameEn, N''"' + @NodeToNameEn + '*"'')
+            AND StateId = 1
+        )';
+        SET @Joins +=  '
+        INNER JOIN FilteredNodeToEn fnte ON fnte.Id = tr.Id';
+    END
+
+    IF @NodeToNameRu <> ''
+    BEGIN
+        SET @CTEs += ', 
+        FilteredNodeToRu AS (
+            SELECT Id
+            FROM [mdm].[dbo].[TransportRateSnapshot] (NOLOCK)
+            WHERE CONTAINS(NodeToNameRu, N''"' + @NodeToNameRu + '*"'')
+            AND StateId = 1
+        )';
+        SET @Joins += '
+        INNER JOIN FilteredNodeToRu fntr ON fntr.Id = tr.Id';
     
-    IF ISNULL(@NodeToNameEn, '') <> '' OR  ISNULL(@NodeToNameRu, '') <> ''
-    BEGIN
-        SET @joinsCount += ' JOIN PrimitiveEntityData_1014 nt (NOLOCK) ON r.NodeTo = nt.PrimitiveEntityItemId 
-        ';   
-    END
-    IF ISNULL(@NodeToNameEn, '') <> ''
-    BEGIN
-        SET @where += ' AND CONTAINS(nt.a_2123, @NodeToNameEn)';
-        SET @NodeToNameEn = '"' + @NodeToNameEn + '*"';
     END
 
-    IF ISNULL(@NodeToNameRu, '') <> ''
+
+    IF @RateTypeName <> ''
     BEGIN
-        SET @where += ' AND CONTAINS(nt.a_1020, @NodeToNameRu)';
-        SET @NodeToNameRu = '"' + @NodeToNameRu + '*"';
+        SET @CTEs += ', FilteredRateType AS (
+            SELECT Id
+            FROM [mdm].[dbo].[TransportRateSnapshot] (NOLOCK)
+            WHERE CONTAINS(RateTypeName, N''"' + @RateTypeName + '*"'')
+            AND StateId = 1
+        )';
+        SET @Joins += '
+        INNER JOIN FilteredRateType frt ON frt.Id = tr.Id';
     END
 
-    -- LIKE filters
-    IF ISNULL(@RateTypeName, '') <> ''
+    IF @ProductGroupName <> ''
     BEGIN
-        SET @joinsCount += ' JOIN vw_RateType rt (NOLOCK) ON r.RateType = rt.Id '; 
-      
-        SET @where += ' AND rt.[Name] LIKE @RateTypeName';
-        SET @RateTypeName = '%' + @RateTypeName + '%';
+        SET @CTEs += ', FilteredProductGroup AS (
+            SELECT Id
+            FROM [mdm].[dbo].[TransportRateSnapshot] (NOLOCK)
+            WHERE CONTAINS(ProductGroupName, N''"' + @ProductGroupName + '*"'')
+            AND StateId = 1
+        )';
+        SET @Joins += '
+        INNER JOIN FilteredProductGroup fpg ON fpg.Id = tr.Id';
     END
 
-    IF ISNULL(@ProductGroupName, '') <> ''
-    BEGIN
-        SET @joinsCount += ' JOIN vw_ProductGroup pg (NOLOCK) ON r.ProductGroup = pg.Id '; 
-        
-        SET @where += ' AND pg.[Name] LIKE @ProductGroupName';
-        SET @ProductGroupName = '%' + @ProductGroupName + '%';
-    END
-
-    -- JOINs
-    SET @joins = '
-    FROM vw_TransportRate r (NOLOCK)
-    JOIN PrimitiveEntityData_1014 nf (NOLOCK) ON r.NodeFrom = nf.PrimitiveEntityItemId
-    JOIN PrimitiveEntityData_1014 nt (NOLOCK) ON r.NodeTo = nt.PrimitiveEntityItemId
-    LEFT JOIN PrimitiveEntityData_1014 np (NOLOCK) ON r.ProxyNode = np.PrimitiveEntityItemId
-    JOIN vw_ProductGroup pg (NOLOCK) ON r.ProductGroup = pg.Id
-    JOIN vw_RateType rt (NOLOCK) ON r.RateType = rt.Id
-    JOIN vw_TransportKind tk (NOLOCK) ON r.TransportKind = tk.Id
-    JOIN vw_TransportType_level_3 tt (NOLOCK) ON r.TransportType = tt.Id
-    LEFT JOIN vw_Contractor cn (NOLOCK) ON r.Counterparty = cn.Id
-    JOIN vw_Currency cur (NOLOCK) ON r.CurrencyStandard = cur.Id
+    -- Основной SELECT с подставленными CTE и JOIN'ами
+    SET @sqlMain = '
+    WITH CTE AS (SELECT 1 AS TST)
+    ' + @CTEs + '
+    SELECT
+        tr.[Id],
+        tr.[StateId],
+        tr.[Code],
+        tr.[IsDefRate],
+        tr.[StartDate],
+        tr.[EndDate],
+        tr.[CreationDate],
+        tr.[LastChangeDate],
+        tr.[TotalCostTon],
+        tr.[TotalCostTransport],
+        tr.[RateTypeCode],
+        tr.[RateTypeName],
+        tr.[NodeFromCode],
+        tr.[NodeFromNameEn],
+        tr.[NodeFromNameRu],
+        tr.[ProxyNodeCode],
+        tr.[ProxyNodeNameEn],
+        tr.[ProxyNodeNameRu],
+        tr.[NodeToCode],
+        tr.[NodeToNameEn],
+        tr.[NodeToNameRu],
+        tr.[TransportKindCode],
+        tr.[TransportKindNameRu],
+        tr.[TransportTypeCode],
+        tr.[TransportTypeNameRu],
+        tr.[ProductGroupCode],
+        tr.[ProductGroupName],
+        tr.[ContractorCode],
+        tr.[ContractorEGRUL],
+        tr.[CurrencyCode],
+        tr.[CurrencyName]
+    FROM [mdm].[dbo].[TransportRateSnapshot] tr
+    ' + @Joins + '
+    ORDER BY '+ ISNULL(@SortKey + ' ' + @SortDirection + ', ', '')  + '  tr.Id DESC
+    OFFSET ' + CAST(@Offset AS NVARCHAR(20)) + ' ROWS
+    FETCH NEXT ' + CAST(@PageSize AS NVARCHAR(20)) + ' ROWS ONLY;
     ';
 
-    -- Основной SELECT с OFFSET-FETCH
-    SET @sql = '
-    SELECT 
-        r.Code AS RateCode,
-        r.IsDefRate AS IsDefRate,
-        rt.Code AS RateTypeCode,
-        rt.[Name] AS RateTypeName,
-        nf.Code AS NodeFromCode,
-        nf.a_2123 AS NodeFromNameEn,
-        nf.a_1020 AS NodeFromNameRu,
-        np.a_2123 AS ProxyNodeCode,   
-        np.a_1020 AS ProxyNodeNameEn,
-        nt.a_2123 AS ProxyNodeNameRu,
-        nt.a_1020 AS NodeToCode,
-        tk.NameEnRu AS NodeToNameEn,
-        tt.NameEnRu AS NodeToNameRu,
-        r.StartDate,
-        r.EndDate,
-        r.CreationDate,
-        r.LastChangeDate,
-        pg.Code AS ProductGroupCode,
-        pg.[Name] AS ProductGroupName,
-        cn.ShortNameEGRUL,
-        r.TotalCostTon,
-        r.TotalCostTransport,
-        cur.Code AS CurrencyCode,
-        cur.[Name] AS CurrencyName
-    ' + @joins + CHAR(10) + @where + '
-    ORDER BY '+ ISNULL(@SortKey + ' ' + @SortDirection , ' r.Id')  + ' 
-    OFFSET ' + CAST(@Offset AS NVARCHAR) + ' ROWS
-    FETCH NEXT ' + CAST(@PageSize AS NVARCHAR) + ' ROWS ONLY;
-    ';
-
-    -- Подсчёт общего количества
     SET @sqlCount = '
+    WITH CTE AS (SELECT 1 AS TST)
+    ' + @CTEs + '
     SELECT COUNT(1) AS TotalCount
-    ' + @joinsCount + CHAR(10) + @where + ';
-    ';
+    FROM [mdm].[dbo].[TransportRateSnapshot] tr
+    ' + @Joins + ';';
 
-    
-    -- Выполнить оба запроса
-    DECLARE @both_sql NVARCHAR(MAX) = @sql + @sqlCount;
-    print @both_sql
-    EXEC sp_executesql 
-        @both_sql,
-        N'
-        @NodeFromNameEn NVARCHAR(100),
-        @NodeFromNameRu NVARCHAR(100),
-        @ProxyNodeNameEn NVARCHAR(100),
-        @ProxyNodeNameRu NVARCHAR(100),
-        @NodeToNameEn NVARCHAR(100),
-        @NodeToNameRu NVARCHAR(100),
-        @RateTypeName NVARCHAR(100),
-        @ProductGroupName NVARCHAR(100)
-        ',
-        @NodeFromNameEn = @NodeFromNameEn,
-        @NodeFromNameRu = @NodeFromNameRu,
-        @ProxyNodeNameEn = @ProxyNodeNameEn,
-        @ProxyNodeNameRu = @ProxyNodeNameRu,
-        @NodeToNameEn = @NodeToNameEn,
-        @NodeToNameRu = @NodeToNameRu,
-        @RateTypeName = @RateTypeName,
-        @ProductGroupName = @ProductGroupName;
+    SET @both_sql = @sqlMain + CHAR(13) + @sqlCount;
+
+    -- Для отладки можно раскомментировать:
+    --PRINT @both_sql;
+
+    EXEC sp_executesql @both_sql;
 END
+GO
