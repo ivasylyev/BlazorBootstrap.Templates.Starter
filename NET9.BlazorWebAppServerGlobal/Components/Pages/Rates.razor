@@ -1,12 +1,10 @@
-﻿@page "/weather"
+﻿@page "/rates"
 @using NET9.BlazorWebAppServerGlobal.Models
 @using NET9.BlazorWebAppServerGlobal.Services
 
-<PageTitle>Weather</PageTitle>
+<PageTitle>Ставки</PageTitle>
 
-<h1>Weather</h1>
-
-<p>This component demonstrates showing data.</p>
+<h1>Ставки</h1>
 
 <Grid TItem="RateDto"
        Class="table table-hover table-bordered table-striped"
@@ -16,22 +14,21 @@
        AllowSorting="true"
        Responsive="true">
 
-    <GridColumn TItem="RateDto" HeaderText="Code" PropertyName="RateCode" SortString="RateCode" SortKeySelector="item => item.RateCode">
-        @context.RateCode
+    <GridColumn TItem="RateDto" HeaderText="Code" PropertyName="Code" SortString="Code" SortKeySelector="item => item.Code">
+        @context.Code
     </GridColumn>
 
-    <GridColumn TItem="RateDto" HeaderText="Дефлятор" PropertyName="IsDefRate" SortString="IsDefRate" SortKeySelector="item => item.IsDefRate">
+    <GridColumn TItem="RateDto" HeaderText="Дефлятор" PropertyName="IsDefRate" SortString="IsDefRate" @* Class="d-none" *@  SortKeySelector="item => item.IsDefRate">
         @context.IsDefRate
     </GridColumn>
 
-    <GridColumn TItem="RateDto" HeaderText="Тип ставки" PropertyName="RateTypeName" SortString="RateTypeName" SortKeySelector="item => item.RateTypeName">
+    <GridColumn TItem="RateDto" HeaderText="Тип ставки" PropertyName="RateTypeName" Filterable="false" SortString="RateTypeName" SortKeySelector="item => item.RateTypeName">
         @context.RateTypeName
     </GridColumn>
 
     <GridColumn TItem="RateDto" HeaderText="Отправление" PropertyName="NodeFromNameRu" SortString="NodeFromNameRu" SortKeySelector="item => item.NodeFromNameRu">
         @context.NodeFromNameRu
     </GridColumn>
-    
 
 
 

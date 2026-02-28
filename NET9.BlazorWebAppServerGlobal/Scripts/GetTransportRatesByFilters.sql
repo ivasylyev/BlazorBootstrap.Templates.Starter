@@ -9,13 +9,26 @@ CREATE OR ALTER PROCEDURE dbo.GetTransportRatesByFilters
     @SortDirection NVARCHAR(100) = NULL,
 
     @NodeFromNameEn NVARCHAR(100) = NULL,
+    @NodeFromNameEn_Operator NVARCHAR(100) = NULL,
     @NodeFromNameRu NVARCHAR(100) = NULL,
+    @NodeFromNameRu_Operator NVARCHAR(100) = NULL,
     @ProxyNodeNameEn NVARCHAR(100) = NULL,
+    @ProxyNodeNameEn_Operator NVARCHAR(100) = NULL,
     @ProxyNodeNameRu NVARCHAR(100) = NULL,
+    @ProxyNodeNameRu_Operator NVARCHAR(100) = NULL,
     @NodeToNameEn NVARCHAR(100) = NULL,
+    @NodeToNameEn_Operator NVARCHAR(100) = NULL,
     @NodeToNameRu NVARCHAR(100) = NULL,
+    @NodeToNameRu_Operator NVARCHAR(100) = NULL,
     @RateTypeName NVARCHAR(100) = NULL,
-    @ProductGroupName NVARCHAR(100) = NULL
+    @RateTypeName_Operator NVARCHAR(100) = NULL,
+    @ProductGroupName NVARCHAR(100) = NULL,
+    @ProductGroupName_Operator NVARCHAR(100) = NULL,
+    @StartDate NVARCHAR(100) = NULL,
+    @StartDate_Operator NVARCHAR(100) = NULL,
+    @EndDate NVARCHAR(100) = NULL,
+    @EndDate_Operator NVARCHAR(100) = NULL
+     
 AS
 BEGIN
     SET NOCOUNT ON;
@@ -37,11 +50,28 @@ BEGIN
         @Offset INT = (@PageNumber - 1) * @PageSize,
         @CTEs NVARCHAR(MAX) = '',
         @Joins NVARCHAR(MAX) = '',
+        @Filters NVARCHAR(MAX) = '',
         @sqlMain NVARCHAR(MAX),
         @sqlCount NVARCHAR(MAX),
         @both_sql NVARCHAR(MAX);
 
    
+   SET @Filters = ' 
+   WHERE 1=1'
+   
+    IF (ISDATE(@StartDate) = 1)
+    BEGIN
+        SET @Filters += ISNULL(N'
+        AND  tr.StartDate ' + dbo.fn_GetSqlOperator(@StartDate_Operator) -- если функция вернет NULL, весь фильтр обнулится. И это правильное поведение
+        +''''+ @StartDate + '''','')
+    END
+    IF (ISDATE(@EndDate) = 1)
+    BEGIN
+        SET @Filters +=  ISNULL(N'
+        AND  tr.EndDate ' + dbo.fn_GetSqlOperator(@EndDate_Operator) -- если функция вернет NULL, весь фильтр обнулится. И это правильное поведение
+        +''''+ @EndDate + '''','')
+    END
+
 
     IF @NodeFromNameRu <> ''
     BEGIN
@@ -156,8 +186,8 @@ BEGIN
         tr.[StateId],
         tr.[Code],
         tr.[IsDefRate],
-        tr.[StartDate],
-        tr.[EndDate],
+        CAST(tr.[StartDate] AS DATE) StartDate,
+        CAST(tr.[EndDate] AS DATE) EndDate,
         tr.[CreationDate],
         tr.[LastChangeDate],
         tr.[TotalCostTon],
@@ -184,7 +214,8 @@ BEGIN
         tr.[CurrencyCode],
         tr.[CurrencyName]
     FROM [mdm].[dbo].[TransportRateSnapshot] tr
-    ' + @Joins + '
+    ' + @Joins + ' 
+    ' + @Filters + '
     ORDER BY '+ ISNULL(@SortKey + ' ' + @SortDirection + ', ', '')  + '  tr.Id DESC
     OFFSET ' + CAST(@Offset AS NVARCHAR(20)) + ' ROWS
     FETCH NEXT ' + CAST(@PageSize AS NVARCHAR(20)) + ' ROWS ONLY;
@@ -195,7 +226,8 @@ BEGIN
     ' + @CTEs + '
     SELECT COUNT(1) AS TotalCount
     FROM [mdm].[dbo].[TransportRateSnapshot] tr
-    ' + @Joins + ';';
+    ' + @Joins + ' 
+    ' + @Filters + ';';
 
     SET @both_sql = @sqlMain + CHAR(13) + @sqlCount;
 

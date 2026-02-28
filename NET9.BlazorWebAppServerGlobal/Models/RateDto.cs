@@ -2,7 +2,7 @@
 {
     public class RateDto
     {
-        public string? RateCode { get; set; }
+        public string? Code { get; set; }
         public bool IsDefRate { get; set; }
         public string? RateTypeCode { get; set; }
         public string? RateTypeName { get; set; }
@@ -22,8 +22,8 @@
         public string? TransportKindNameRu { get; set; }
         public string? TransportTypeNameRu { get; set; }
 
-        public DateTime StartDate { get; set; }
-        public DateTime? EndDate { get; set; }
+        public DateOnly StartDate { get; set; }
+        public DateOnly? EndDate { get; set; }
         public DateTime CreationDate { get; set; }
         public DateTime? LastChangeDate { get; set; }
 

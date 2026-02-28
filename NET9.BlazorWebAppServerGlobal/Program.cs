@@ -1,6 +1,10 @@
 
+using Dapper;
 using NET9.BlazorWebAppServerGlobal.Components;
 using NET9.BlazorWebAppServerGlobal.Services;
+
+
+SqlMapper.AddTypeHandler(new SqlDateOnlyTypeHandler());
 
 var builder = WebApplication.CreateBuilder(args);
 

@@ -17,17 +17,35 @@ public class RatesService : IRatesService
     {
         try
         {
-            var filtersDict = filters.ToDictionary(f => f.PropertyName, f => f.Value);
-           
+            await using var connection = new SqlConnection(_connectionString);
+            await connection.OpenAsync(cancellationToken);
 
-            var (results, count) = await GetRatesByFiltersAsync(
-                pageNumber:pageNumber,
-                pageSize:pageSize,
-                sortKey:sortKey,
-                sortDirection:sortDirection == SortDirection.Descending?"DESC":"ASC",
-                filtersDict
-            );
-            return new(results, count);
+            var parameters = new DynamicParameters();
+            parameters.Add("PageNumber", pageNumber);
+            parameters.Add("PageSize", pageSize);
+            parameters.Add("SortKey", sortKey);
+            parameters.Add("SortDirection", sortDirection == SortDirection.Descending ? "DESC" : "ASC");
+            parameters.Add("PageNumber", pageNumber);
+            foreach (var filter in filters)
+            {
+                if (filter.Value.Length > 2)
+                {
+                    parameters.Add(filter.PropertyName, filter.Value);
+                    parameters.Add($"{filter.PropertyName}_Operator", filter.Operator.ToString());
+                }
+            }
+
+
+            await using var multi = await connection.QueryMultipleAsync(
+                "dbo.GetTransportRatesByFilters",
+                parameters,
+                commandType: CommandType.StoredProcedure);
+
+            var rates = (await multi.ReadAsync<RateDto>()).ToList();
+            var count = (await multi.ReadFirstOrDefaultAsync<RateCountDto>())?.TotalCount ?? 0;
+
+           
+            return new(rates, count);
         }
         catch (Exception e)
         {
@@ -37,37 +55,5 @@ public class RatesService : IRatesService
 
     }
 
-    public async Task<(List<RateDto> Items, int TotalCount)> GetRatesByFiltersAsync(
-        int pageNumber,
-        int pageSize,
-        string? sortKey,
-        string? sortDirection,
-        Dictionary<string, string> filters)
-    {
-        using var connection = new SqlConnection(_connectionString);
-        await connection.OpenAsync();
-
-        var parameters = new DynamicParameters();
-        parameters.Add("PageNumber", pageNumber);
-        parameters.Add("PageSize", pageSize);
-        parameters.Add("SortKey", sortKey);
-        parameters.Add("SortDirection", sortDirection);
-        parameters.Add("PageNumber", pageNumber);
-        foreach (var filter in filters)
-        {
-            parameters.Add(filter.Key,filter.Value);
-        }
-       
-
-        using var multi = await connection.QueryMultipleAsync(
-            "dbo.GetTransportRatesByFilters",
-            parameters,
-            commandType: CommandType.StoredProcedure);
-
-        var rates = (await multi.ReadAsync<RateDto>()).ToList();
-        var count = (await multi.ReadFirstOrDefaultAsync<RateCountDto>())?.TotalCount ?? 0;
-
-        return (rates, count);
-    }
 
 }

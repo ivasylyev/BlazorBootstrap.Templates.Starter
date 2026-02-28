@@ -1,6 +1,24 @@
 USE [mdm]
 GO
 
+
+CREATE OR ALTER FUNCTION dbo.fn_GetSqlOperator (@OperatorName NVARCHAR(50))
+RETURNS NVARCHAR(2)
+AS
+BEGIN
+    RETURN CASE @OperatorName
+        WHEN 'Equals' THEN '='
+        WHEN 'NotEquals' THEN '<>'
+        WHEN 'LessThan' THEN '<'
+        WHEN 'LessThanOrEquals' THEN '<='
+        WHEN 'GreaterThan' THEN '>'
+        WHEN 'GreaterThanOrEquals' THEN '>='
+        ELSE NULL -- Или можно вернуть пустую строку '', если оператор не найден
+    END
+END
+GO
+
+
 DROP TABLE IF EXISTS dbo.TransportRateSnapshot
 GO
 
