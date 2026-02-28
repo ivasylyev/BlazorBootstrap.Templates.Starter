@@ -52,11 +52,11 @@
         @(context.EndDate?.ToShortDateString() ?? "")
     </GridColumn>
 
-    <GridColumn TItem="RateDto" HeaderText="Валюта" PropertyName="CurrencyCode" SortString="CurrencyCode" SortKeySelector="item => item.CurrencyCode">
+    <GridColumn TItem="RateDto" HeaderText="Валюта" PropertyName="CurrencyCode" Filterable="false" SortString="CurrencyCode" SortKeySelector="item => item.CurrencyCode">
         @context.CurrencyCode
     </GridColumn>
 
-    <GridColumn TItem="RateDto" HeaderText="За тонну" PropertyName="TotalCostTon" SortString="TotalCostTon" SortKeySelector="item => item.TotalCostTon">
+    <GridColumn TItem="RateDto" HeaderText="За тонну" PropertyName="TotalCostTon" Filterable="false" SortString="TotalCostTon" SortKeySelector="item => item.TotalCostTon">
         @context.TotalCostTon
     </GridColumn>
 
