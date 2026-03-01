@@ -1,24 +1,17 @@
 ﻿@inherits LayoutComponentBase
-@inject NavigationManager Nav
 <BlazorBootstrapLayout StickyHeader="true">
     <HeaderSection>
-        
         <HeaderMenu />
-
     </HeaderSection>
+
     <ContentSection>
         @Body
     </ContentSection>
 
     <FooterSection>
-        Footer links...
+        Что-то внизу ...
     </FooterSection>
 </BlazorBootstrapLayout>
-
-@code {
-   
-
-}
 
 <div id="blazor-error-ui" data-nosnippet>
     An unhandled error has occurred.

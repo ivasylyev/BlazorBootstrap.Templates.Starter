@@ -6,11 +6,11 @@ namespace NET9.BlazorWebAppServerGlobal.Components.Layout;
 
 public partial class HeaderMenu
 {
-    private List<MenuItem> MenuItems = new()
-    {
+    private List<MenuItem> MenuItems =
+    [
         new() { Url = "/", Text = "Домашняя", Icon = IconName.HouseDoorFill },
         new() { Url = "/rates", Text = "Ставки", Icon = IconName.Table }
-    };
+    ];
 
     protected override void OnInitialized()
     {

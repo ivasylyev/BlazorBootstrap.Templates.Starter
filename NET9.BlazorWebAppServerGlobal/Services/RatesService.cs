@@ -3,17 +3,33 @@ using Dapper;
 using NET9.BlazorWebAppServerGlobal.Models;
 using System.Data;
 using System.Data.SqlClient;
-using System.Text.Json;
 using Newtonsoft.Json;
 namespace NET9.BlazorWebAppServerGlobal.Services;
 
 public class RatesService : IRatesService
 {
-  
-    private readonly string _connectionString = "Server=S001ITD-0084;Database=mdm;Trusted_Connection=false;User ID=SVT;Password=SVTsrv1!;MultipleActiveResultSets=true;Application Name=mdm-api;Encrypt=False;TrustServerCertificate=True;Max Pool Size=1000;";
+    private const string _connectionString = "Server=S001ITD-0084;Database=mdm;Trusted_Connection=false;User ID=SVT;Password=SVTsrv1!;MultipleActiveResultSets=true;Application Name=mdm-api;Encrypt=False;TrustServerCertificate=True;Max Pool Size=1000;";
 
+    public async Task<GridDataProviderResult<RateDto>> CustomersDataProvider(GridDataProviderRequest<RateDto> request)
+    {
+        string? sortString = null;
+        var sortDirection = SortDirection.None;
 
-public async Task<Tuple<IEnumerable<RateDto>, int>> GetCustomersAsync(IEnumerable<FilterItem> filters, int pageNumber, int pageSize, string? sortKey, SortDirection sortDirection, CancellationToken cancellationToken = default)
+        if (request.Sorting is not null && request.Sorting.Any())
+        {
+            // Note: Multi column sorting is not supported at this moment
+            sortString = request.Sorting.FirstOrDefault()!.SortString;
+            sortDirection = request.Sorting.FirstOrDefault()!.SortDirection;
+        }
+        var result = await GetCustomersAsync(request.Filters, request.PageNumber, request.PageSize, sortString, sortDirection, request.CancellationToken);
+        return await Task.FromResult(new GridDataProviderResult<RateDto>
+        {
+            Data = result.Item1,
+            TotalCount = result.Item2
+        });
+    }
+
+    private async Task<Tuple<IEnumerable<RateDto>, int>> GetCustomersAsync(IEnumerable<FilterItem> filters, int pageNumber, int pageSize, string? sortKey, SortDirection sortDirection, CancellationToken cancellationToken = default)
     {
         try
         {

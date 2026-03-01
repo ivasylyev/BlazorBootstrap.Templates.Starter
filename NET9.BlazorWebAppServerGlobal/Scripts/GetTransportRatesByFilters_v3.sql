@@ -86,16 +86,20 @@ BEGIN
     SELECT @WhereClause = STRING_AGG(
         CASE ColumnType
             -- Логика для СТРОК
-            WHEN 'NVARCHAR' THEN N'
-                AND CONTAINS(tr.' + ColumnName + ', N''"' + ColumnValue + '*"'') '
+            WHEN 'NVARCHAR' THEN 
+                CASE WHEN LEN(ColumnValue) > 2 THEN
+                    N'
+                    AND CONTAINS(tr.' + ColumnName + ', N''"' + ColumnValue + '*"'') '
+                ELSE '' 
+                END
 
             -- Логика для ДАТ
             WHEN 'DATE' THEN 
                 CASE WHEN ISDATE(ColumnValue) = 1
                 THEN
-                ISNULL(N'
-                AND  tr.' + ColumnName + ' ' + dbo.fn_GetSqlOperator_v3(Operator) -- если функция вернет NULL, весь фильтр обнулится. И это правильное поведение
-                +''''+ ColumnValue + '''','')
+                    ISNULL(N'
+                    AND  tr.' + ColumnName + ' ' + dbo.fn_GetSqlOperator_v3(Operator) -- если функция вернет NULL, весь фильтр обнулится. И это правильное поведение
+                    +''''+ ColumnValue + '''','')
                 ELSE ''
                 END
 
