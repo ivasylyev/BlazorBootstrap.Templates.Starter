@@ -7,7 +7,9 @@ namespace NET9.BlazorWebAppServerGlobal.Components.Pages;
 
 public partial class Rates
 {
-    [Inject] public IRatesService RatesService { get; set; } = default!;
+    [Inject] 
+    public IRatesService RatesService { get; set; } = default!;
+    private Modal modal = default!;
     private readonly Dictionary<string, RateGridColumnSettings> columnSettings;
 
     public Rates()
