@@ -57,6 +57,8 @@ BEGIN
     INSERT INTO @AllowedColumns (ColumnName, ColumnType)
     VALUES (N'StartDate', N'DATE'),
            (N'EndDate', N'DATE'),
+           (N'CreationDate', N'DATE'),
+           (N'LastChangeDate', N'DATE'),
            (N'NodeFromNameRu', N'NVARCHAR'),
            (N'NodeFromNameEn', N'NVARCHAR'),
            (N'ProxyNodeNameRu', N'NVARCHAR'),
