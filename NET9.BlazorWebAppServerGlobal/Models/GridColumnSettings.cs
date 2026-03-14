@@ -2,18 +2,18 @@
 
 namespace NET9.BlazorWebAppServerGlobal.Models;
 
-public class GridColumnSettings(
+public class GridColumnSettings<T>(
     string name,
     string header,
-    Func<RateDto, object> displaySelector,
-    Expression<Func<RateDto, IComparable>> sortSelector,
+    Func<T, object> displaySelector,
+    Expression<Func<T, IComparable>> sortSelector,
     bool filterable,
-    bool visible)
+    bool visible) where T: class
 {
     public GridColumnSettings(string name,
         string header,
-        Func<RateDto, object> displaySelector,
-        Expression<Func<RateDto, IComparable>> sortSelector)
+        Func<T, object> displaySelector,
+        Expression<Func<T, IComparable>> sortSelector)
         : this(name, header, displaySelector, sortSelector, true, true)
     {
     }
@@ -24,7 +24,7 @@ public class GridColumnSettings(
     public bool Filterable { get; set; } = filterable;
     
 
-    public Func<RateDto, object> DisplaySelector { get; set; } = displaySelector;
+    public Func<T, object> DisplaySelector { get; set; } = displaySelector;
 
-    public Expression<Func<RateDto, IComparable>> SortSelector { get; set; } = sortSelector;
+    public Expression<Func<T, IComparable>> SortSelector { get; set; } = sortSelector;
 }

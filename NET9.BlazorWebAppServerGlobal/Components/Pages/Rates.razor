@@ -1,6 +1,5 @@
 ﻿@page "/rates"
 @using NET9.BlazorWebAppServerGlobal.Models
-@using NET9.BlazorWebAppServerGlobal.Services
 
 <PageTitle>СВТ Blazor Demo - Rates</PageTitle>
 
@@ -12,8 +11,7 @@
         <Content>
             @foreach (var settings in columnSettings.Values)
             {
-                <CheckboxInput Label="@settings.Header" @bind-Value="@settings.Visible"></CheckboxInput>
-                
+                <Switch Label="@settings.Header" @bind-Value="@settings.Visible"></Switch>
             }
         </Content>
     </AccordionItem>
@@ -38,56 +36,6 @@
                         @settings.DisplaySelector(context)
                     </GridColumn>
                 }
-               @*  <GridColumn TItem="RateDto" 
-                            HeaderText="@columnSettings["Code"].Header" 
-                            PropertyName="Code" 
-                            SortString="Code" 
-                            IsVisible="@columnSettings["Code"].Visible" 
-                            Filterable=""
-                            SortKeySelector="@columnSettings["Code"].SortSelector">
-                    @columnSettings["Code"].DisplaySelector(context)
-                </GridColumn> *@
-@* 
-                <GridColumn TItem="RateDto" HeaderText="@columnSettings["IsDefRate"].Header" PropertyName="IsDefRate" SortString="IsDefRate"  IsVisible="@columnSettings["IsDefRate"].Visible" SortKeySelector="item => item.IsDefRate">
-                    @columnSettings["IsDefRate"].DisplaySelector(context)
-                </GridColumn>
-
-                <GridColumn TItem="RateDto" HeaderText="@columnSettings["RateTypeName"].Header" PropertyName="RateTypeName" Filterable="false" SortString="RateTypeName" IsVisible="@columnSettings["RateTypeName"].Visible" SortKeySelector="item => item.RateTypeName">
-                    @columnSettings["RateTypeName"].DisplaySelector(context)
-                </GridColumn>
-
-                <GridColumn TItem="RateDto" HeaderText="@columnSettings["NodeFromNameRu"].Header" PropertyName="NodeFromNameRu" SortString="NodeFromNameRu" IsVisible="@columnSettings["NodeFromNameRu"].Visible" SortKeySelector="item => item.NodeFromNameRu">
-                    @columnSettings["NodeFromNameRu"].DisplaySelector(context)
-                </GridColumn>
-
-                <GridColumn TItem="RateDto" HeaderText="@columnSettings["ProxyNodeNameRu"].Header" PropertyName="ProxyNodeNameRu" SortString="ProxyNodeNameRu" IsVisible="@columnSettings["ProxyNodeNameRu"].Visible" SortKeySelector="item => item.ProxyNodeNameRu">
-                    @columnSettings["ProxyNodeNameRu"].DisplaySelector(context)
-                </GridColumn>
-
-                <GridColumn TItem="RateDto" HeaderText="@columnSettings["NodeToNameRu"].Header" PropertyName="NodeToNameRu" SortString="NodeToNameRu" IsVisible="@columnSettings["NodeToNameRu"].Visible" SortKeySelector="item => item.NodeToNameRu">
-                    @columnSettings["NodeToNameRu"].DisplaySelector(context)
-                </GridColumn>
-
-                <GridColumn TItem="RateDto" HeaderText="@columnSettings["ProductGroupName"].Header" PropertyName="ProductGroupName" SortString="ProductGroupName" IsVisible="@columnSettings["ProductGroupName"].Visible" SortKeySelector="item => item.ProductGroupName">
-                    @columnSettings["ProductGroupName"].DisplaySelector(context)
-                </GridColumn>
-
-                <GridColumn TItem="RateDto" HeaderText="@columnSettings["StartDate"].Header" PropertyName="StartDate" SortString="StartDate" IsVisible="@columnSettings["StartDate"].Visible" SortKeySelector="item => item.StartDate">
-                    @columnSettings["StartDate"].DisplaySelector(context)
-                </GridColumn>
-
-                <GridColumn TItem="RateDto" HeaderText="@columnSettings["EndDate"].Header" PropertyName="EndDate" SortString="EndDate" IsVisible="@columnSettings["EndDate"].Visible" SortKeySelector="item => item.EndDate">
-                    @columnSettings["EndDate"].DisplaySelector(context)
-                </GridColumn>
-
-                <GridColumn TItem="RateDto" HeaderText="@columnSettings["CurrencyCode"].Header" PropertyName="CurrencyCode" Filterable="false" SortString="CurrencyCode" IsVisible="@columnSettings["CurrencyCode"].Visible" SortKeySelector="item => item.CurrencyCode">
-                    @columnSettings["CurrencyCode"].DisplaySelector(context)
-                </GridColumn>
-
-                <GridColumn TItem="RateDto" HeaderText="@columnSettings["TotalCostTon"].Header"  PropertyName="TotalCostTon" Filterable="false" SortString="TotalCostTon" IsVisible="@columnSettings["TotalCostTon"].Visible" SortKeySelector="item => item.TotalCostTon">
-                    @columnSettings["TotalCostTon"].DisplaySelector(context)
-                </GridColumn> *@
-
             </Grid>
         </Content>
     </AccordionItem>
