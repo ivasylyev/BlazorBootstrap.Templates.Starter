@@ -26,12 +26,29 @@
                   AllowPaging="true"
                   AllowSorting="true"
                   Responsive="true">
-
-                <GridColumn TItem="RateDto" HeaderText="@columnSettings["Code"].Header" PropertyName="Code" SortString="Code" IsVisible="@columnSettings["Code"].Visible" SortKeySelector="item => item.Code">
+                @foreach (var settings in columnSettings.Values)
+                {
+                    <GridColumn TItem="RateDto" 
+                                HeaderText="@settings.Header" 
+                                PropertyName="@settings.Name"
+                                SortString="@settings.Name"
+                                IsVisible="@settings.Visible"
+                                Filterable="@settings.Filterable"
+                                SortKeySelector="@settings.SortSelector"> 
+                        @settings.DisplaySelector(context)
+                    </GridColumn>
+                }
+               @*  <GridColumn TItem="RateDto" 
+                            HeaderText="@columnSettings["Code"].Header" 
+                            PropertyName="Code" 
+                            SortString="Code" 
+                            IsVisible="@columnSettings["Code"].Visible" 
+                            Filterable=""
+                            SortKeySelector="@columnSettings["Code"].SortSelector">
                     @columnSettings["Code"].DisplaySelector(context)
-                </GridColumn>
-
-                <GridColumn TItem="RateDto" HeaderText="@columnSettings["IsDefRate"].Header" PropertyName="IsDefRate" SortString="IsDefRate" @* Class="d-none" *@ IsVisible="@columnSettings["IsDefRate"].Visible" SortKeySelector="item => item.IsDefRate">
+                </GridColumn> *@
+@* 
+                <GridColumn TItem="RateDto" HeaderText="@columnSettings["IsDefRate"].Header" PropertyName="IsDefRate" SortString="IsDefRate"  IsVisible="@columnSettings["IsDefRate"].Visible" SortKeySelector="item => item.IsDefRate">
                     @columnSettings["IsDefRate"].DisplaySelector(context)
                 </GridColumn>
 
@@ -69,7 +86,7 @@
 
                 <GridColumn TItem="RateDto" HeaderText="@columnSettings["TotalCostTon"].Header"  PropertyName="TotalCostTon" Filterable="false" SortString="TotalCostTon" IsVisible="@columnSettings["TotalCostTon"].Visible" SortKeySelector="item => item.TotalCostTon">
                     @columnSettings["TotalCostTon"].DisplaySelector(context)
-                </GridColumn>
+                </GridColumn> *@
 
             </Grid>
         </Content>

@@ -14,17 +14,17 @@ public partial class Rates
     {
         GridColumnSettings[] arr =
         [
-            new GridColumnSettings("Code","Code", dto => dto.Code),
-            new GridColumnSettings("IsDefRate","Дефлятор", dto => dto.IsDefRate),
-            new GridColumnSettings("RateTypeName","Тип ставки", dto => dto.RateTypeName),
-            new GridColumnSettings("NodeFromNameRu", "Отправление", dto => dto.NodeFromNameRu),
-            new GridColumnSettings("ProxyNodeNameRu", "Промежуточный", dto => dto.ProxyNodeNameRu),
-            new GridColumnSettings("NodeToNameRu", "Назначение", dto => dto.NodeToNameRu),
-            new GridColumnSettings("ProductGroupName", "Группа продуктов", dto => dto.ProductGroupName),
-            new GridColumnSettings("StartDate", "Начало", dto => dto.StartDate.ToShortDateString()),
-            new GridColumnSettings("EndDate", "Окончание", dto => dto.EndDate?.ToShortDateString()),
-            new GridColumnSettings("CurrencyCode", "Валюта", dto => dto.CurrencyCode),
-            new GridColumnSettings("TotalCostTon", "За тонну", dto => dto.TotalCostTon)
+            new GridColumnSettings("Code","Code", dto => dto.Code, dto => dto.Code ),
+            new GridColumnSettings("IsDefRate","Дефлятор", dto => dto.IsDefRate, dto => dto.IsDefRate ),
+            new GridColumnSettings("RateTypeName","Тип ставки", dto => dto.RateTypeName, dto => dto.RateTypeName, false, true),
+            new GridColumnSettings("NodeFromNameRu", "Отправление", dto => dto.NodeFromNameRu, dto => dto.NodeFromNameRu),
+            new GridColumnSettings("ProxyNodeNameRu", "Промежуточный", dto => dto.ProxyNodeNameRu, dto => dto.ProxyNodeNameRu),
+            new GridColumnSettings("NodeToNameRu", "Назначение", dto => dto.NodeToNameRu, dto => dto.NodeToNameRu),
+            new GridColumnSettings("ProductGroupName", "Группа продуктов", dto => dto.ProductGroupName, dto => dto.ProductGroupName),
+            new GridColumnSettings("StartDate", "Начало", dto => dto.StartDate.ToShortDateString(), dto => dto.StartDate),
+            new GridColumnSettings("EndDate", "Окончание", dto => dto.EndDate.ToShortDateString(), dto => dto.EndDate),
+            new GridColumnSettings("CurrencyCode", "Валюта", dto => dto.CurrencyCode, dto => dto.CurrencyCode, false, true),
+            new GridColumnSettings("TotalCostTon", "За тонну", dto => dto.TotalCostTon, dto => dto.TotalCostTon, false, true)
         ];
         columnSettings = arr.ToDictionary(s => s.Name, s => s);
     }
