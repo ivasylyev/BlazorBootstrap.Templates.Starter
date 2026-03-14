@@ -1,4 +1,4 @@
-USE [mdm]
+п»їUSE [mdm]
 GO
 
 
@@ -13,7 +13,7 @@ BEGIN
         WHEN 'LessThanOrEquals' THEN '<='
         WHEN 'GreaterThan' THEN '>'
         WHEN 'GreaterThanOrEquals' THEN '>='
-        ELSE NULL -- Или можно вернуть пустую строку '', если оператор не найден
+        ELSE NULL -- РР»Рё РјРѕР¶РЅРѕ РІРµСЂРЅСѓС‚СЊ РїСѓСЃС‚СѓСЋ СЃС‚СЂРѕРєСѓ '', РµСЃР»Рё РѕРїРµСЂР°С‚РѕСЂ РЅРµ РЅР°Р№РґРµРЅ
     END
 END
 GO
@@ -29,7 +29,7 @@ BEGIN
         WHEN '4' THEN '<=' -- LessThanOrEquals
         WHEN '5' THEN '>' --GreaterThan
         WHEN '6' THEN '>=' --GreaterThanOrEquals
-        ELSE NULL -- Или можно вернуть пустую строку '', если оператор не найден
+        ELSE NULL -- РР»Рё РјРѕР¶РЅРѕ РІРµСЂРЅСѓС‚СЊ РїСѓСЃС‚СѓСЋ СЃС‚СЂРѕРєСѓ '', РµСЃР»Рё РѕРїРµСЂР°С‚РѕСЂ РЅРµ РЅР°Р№РґРµРЅ
     END
 END
 GO
@@ -159,7 +159,7 @@ CREATE FULLTEXT CATALOG ftCatalog AS DEFAULT;
 GO
 
 
--- Создать новый сразу с несколькими столбцами
+-- РЎРѕР·РґР°С‚СЊ РЅРѕРІС‹Р№ СЃСЂР°Р·Сѓ СЃ РЅРµСЃРєРѕР»СЊРєРёРјРё СЃС‚РѕР»Р±С†Р°РјРё
 CREATE FULLTEXT INDEX ON dbo.TransportRateSnapshot 
 (
  

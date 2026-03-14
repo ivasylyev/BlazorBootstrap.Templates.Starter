@@ -1,11 +1,11 @@
-USE mdm
+п»їUSE mdm
 GO
 
 /*
 
 DECLARE @json NVARCHAR(MAX) = N'[
-    {"PropertType":null,"PropertyName":"NodeFromNameRu","Value":"каз","Operator":7,"StringComparison":5},
-    {"PropertType":null,"PropertyName":"NodeToNameRu","Value":"омск","Operator":7,"StringComparison":5}
+    {"PropertType":null,"PropertyName":"NodeFromNameRu","Value":"РєР°Р·","Operator":7,"StringComparison":5},
+    {"PropertType":null,"PropertyName":"NodeToNameRu","Value":"РѕРјСЃРє","Operator":7,"StringComparison":5}
 ]';
 
 SELECT 
@@ -56,7 +56,7 @@ AS
 BEGIN
     SET NOCOUNT ON;
 
-    -- Очищаем параметры
+    -- РћС‡РёС‰Р°РµРј РїР°СЂР°РјРµС‚СЂС‹
     SET @NodeFromNameEn    = ISNULL(LTRIM(RTRIM(@NodeFromNameEn)), '');
     SET @NodeFromNameRu    = ISNULL(LTRIM(RTRIM(@NodeFromNameRu)), '');
     SET @ProxyNodeNameEn   = ISNULL(LTRIM(RTRIM(@ProxyNodeNameEn)), '');
@@ -85,13 +85,13 @@ BEGIN
     IF (ISDATE(@StartDate) = 1)
     BEGIN
         SET @Filters += ISNULL(N'
-        AND  tr.StartDate ' + dbo.fn_GetSqlOperator(@StartDate_Operator) -- если функция вернет NULL, весь фильтр обнулится. И это правильное поведение
+        AND  tr.StartDate ' + dbo.fn_GetSqlOperator(@StartDate_Operator) -- РµСЃР»Рё С„СѓРЅРєС†РёСЏ РІРµСЂРЅРµС‚ NULL, РІРµСЃСЊ С„РёР»СЊС‚СЂ РѕР±РЅСѓР»РёС‚СЃСЏ. Р СЌС‚Рѕ РїСЂР°РІРёР»СЊРЅРѕРµ РїРѕРІРµРґРµРЅРёРµ
         +''''+ @StartDate + '''','')
     END
     IF (ISDATE(@EndDate) = 1)
     BEGIN
         SET @Filters +=  ISNULL(N'
-        AND  tr.EndDate ' + dbo.fn_GetSqlOperator(@EndDate_Operator) -- если функция вернет NULL, весь фильтр обнулится. И это правильное поведение
+        AND  tr.EndDate ' + dbo.fn_GetSqlOperator(@EndDate_Operator) -- РµСЃР»Рё С„СѓРЅРєС†РёСЏ РІРµСЂРЅРµС‚ NULL, РІРµСЃСЊ С„РёР»СЊС‚СЂ РѕР±РЅСѓР»РёС‚СЃСЏ. Р СЌС‚Рѕ РїСЂР°РІРёР»СЊРЅРѕРµ РїРѕРІРµРґРµРЅРёРµ
         +''''+ @EndDate + '''','')
     END
 
@@ -144,7 +144,7 @@ BEGIN
         AND  CONTAINS(ProductGroupName, N''"' + @ProductGroupName + '*"'')';
     END
 
-    -- Основной SELECT с подставленными CTE и JOIN'ами
+    -- РћСЃРЅРѕРІРЅРѕР№ SELECT СЃ РїРѕРґСЃС‚Р°РІР»РµРЅРЅС‹РјРё CTE Рё JOIN'Р°РјРё
     SET @sqlMain = '
     WITH CTE AS (SELECT 1 AS TST)
     ' + @CTEs + '
@@ -198,7 +198,7 @@ BEGIN
 
     SET @both_sql = @sqlMain + CHAR(13) + @sqlCount;
 
-    -- Для отладки можно раскомментировать:
+    -- Р”Р»СЏ РѕС‚Р»Р°РґРєРё РјРѕР¶РЅРѕ СЂР°СЃРєРѕРјРјРµРЅС‚РёСЂРѕРІР°С‚СЊ:
     PRINT @both_sql;
 
     EXEC sp_executesql @both_sql;

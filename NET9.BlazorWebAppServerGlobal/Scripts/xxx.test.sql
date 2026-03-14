@@ -1,19 +1,19 @@
-WITH FilteredNP AS (
+п»їWITH FilteredNP AS (
     SELECT Id
     FROM [mdm].[dbo].[TransportRateSnapshot] (NOLOCK)
-    WHERE CONTAINS(ProxyNodeNameRu, N'"до*"')
+    WHERE CONTAINS(ProxyNodeNameRu, N'"РґРѕ*"')
     AND StateId = 1
 ),
 FilteredNF AS (
     SELECT Id
     FROM [mdm].[dbo].[TransportRateSnapshot] (NOLOCK)
-    WHERE CONTAINS(NodeFromNameRu, N'"тобо*"')
+    WHERE CONTAINS(NodeFromNameRu, N'"С‚РѕР±Рѕ*"')
     AND StateId = 1
 ),
 FilteredNT AS (
     SELECT Id
     FROM [mdm].[dbo].[TransportRateSnapshot] (NOLOCK)
-    WHERE CONTAINS(NodeToNameRu, N'"ки*"')
+    WHERE CONTAINS(NodeToNameRu, N'"РєРё*"')
     AND StateId = 1
 )
 SELECT tr.[Id]
@@ -51,8 +51,8 @@ SELECT tr.[Id]
   INNER JOIN FilteredNP ON FilteredNP.Id = tr.Id
   INNER JOIN FilteredNF ON FilteredNF.Id = tr.Id
   INNER JOIN FilteredNT ON FilteredNT.Id = tr.Id
-  -- WHERE CONTAINS(ProxyNodeNameRu, N'"но*"')
-  -- AND CONTAINS([NodeFromNameRu], N'"тобол*"')
+  -- WHERE CONTAINS(ProxyNodeNameRu, N'"РЅРѕ*"')
+  -- AND CONTAINS([NodeFromNameRu], N'"С‚РѕР±РѕР»*"')
  -- where StateId = 1
 
     ORDER BY ProxyNodeNameRu, Id DESC 

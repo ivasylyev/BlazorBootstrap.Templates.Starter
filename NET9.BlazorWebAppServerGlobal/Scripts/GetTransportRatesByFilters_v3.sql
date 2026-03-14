@@ -1,4 +1,4 @@
-USE mdm
+п»їUSE mdm
 GO
 
 
@@ -11,8 +11,8 @@ GO
      @SortKey=N'NodeToNameRu',
      @SortDirection=N'ASC',
      @Filter=N'[{"PropertType":null,"PropertyName":"Code","Value":"2763157","Operator":7,"StringComparison":5},
-        {"PropertType":null,"PropertyName":"NodeFromNameRu","Value":"каз","Operator":7,"StringComparison":5},
-        {"PropertType":null,"PropertyName":"ProductGroupName","Value":"полиоле","Operator":7,"StringComparison":5},
+        {"PropertType":null,"PropertyName":"NodeFromNameRu","Value":"РєР°Р·","Operator":7,"StringComparison":5},
+        {"PropertType":null,"PropertyName":"ProductGroupName","Value":"РїРѕР»РёРѕР»Рµ","Operator":7,"StringComparison":5},
         {"PropertType":null,"PropertyName":"StartDate","Value":"2026-02-28","Operator":4,"StringComparison":5}]'
 
 
@@ -85,7 +85,7 @@ BEGIN
 
     SELECT @WhereClause = STRING_AGG(
         CASE ColumnType
-            -- Логика для СТРОК
+            -- Р›РѕРіРёРєР° РґР»СЏ РЎРўР РћРљ
             WHEN 'NVARCHAR' THEN 
                 CASE WHEN LEN(ColumnValue) > 2 THEN
                     N'
@@ -93,17 +93,17 @@ BEGIN
                 ELSE '' 
                 END
 
-            -- Логика для ДАТ
+            -- Р›РѕРіРёРєР° РґР»СЏ Р”РђРў
             WHEN 'DATE' THEN 
                 CASE WHEN ISDATE(ColumnValue) = 1
                 THEN
                     ISNULL(N'
-                    AND  tr.' + ColumnName + ' ' + dbo.fn_GetSqlOperator_v3(Operator) -- если функция вернет NULL, весь фильтр обнулится. И это правильное поведение
+                    AND  tr.' + ColumnName + ' ' + dbo.fn_GetSqlOperator_v3(Operator) -- РµСЃР»Рё С„СѓРЅРєС†РёСЏ РІРµСЂРЅРµС‚ NULL, РІРµСЃСЊ С„РёР»СЊС‚СЂ РѕР±РЅСѓР»РёС‚СЃСЏ. Р СЌС‚Рѕ РїСЂР°РІРёР»СЊРЅРѕРµ РїРѕРІРµРґРµРЅРёРµ
                     +''''+ ColumnValue + '''','')
                 ELSE ''
                 END
 
-            -- Логика по умолчанию для остальных типов
+            -- Р›РѕРіРёРєР° РїРѕ СѓРјРѕР»С‡Р°РЅРёСЋ РґР»СЏ РѕСЃС‚Р°Р»СЊРЅС‹С… С‚РёРїРѕРІ
             ELSE ''
         END, 
         ''
@@ -111,7 +111,7 @@ BEGIN
     FROM @FilteredColumns;
     SET @WhereClause = CONCAT('WHERE tr.StateId = 1', @WhereClause)
 
-    -- Основной SELECT с подставленными CTE и JOIN'ами
+    -- РћСЃРЅРѕРІРЅРѕР№ SELECT СЃ РїРѕРґСЃС‚Р°РІР»РµРЅРЅС‹РјРё CTE Рё JOIN'Р°РјРё
     SET @MainSQL = '
     WITH CTE AS (SELECT 1 AS TST)
     ' + @CTEs + '
@@ -165,7 +165,7 @@ BEGIN
 
     SET @BothSQL = @MainSQL + CHAR(13) + CHAR(10) + @TotalCountSQL;
 
-    -- Для отладки можно раскомментировать:
+    -- Р”Р»СЏ РѕС‚Р»Р°РґРєРё РјРѕР¶РЅРѕ СЂР°СЃРєРѕРјРјРµРЅС‚РёСЂРѕРІР°С‚СЊ:
     PRINT @BothSQL;
 
     EXEC sp_executesql @BothSQL;

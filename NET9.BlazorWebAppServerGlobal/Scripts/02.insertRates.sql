@@ -1,4 +1,4 @@
-SET IDENTITY_INSERT dbo.TransportRateSnapshot ON
+﻿SET IDENTITY_INSERT dbo.TransportRateSnapshot ON
 
 INSERT INTO dbo.TransportRateSnapshot (
     Id,
