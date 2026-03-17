@@ -5,5 +5,8 @@ namespace NET9.BlazorWebAppServerGlobal.Services;
 
 public interface IRatesService
 {
-      public Task<GridDataProviderResult<RateDto>> CustomersDataProvider(GridDataProviderRequest<RateDto> request);
+    public Task<Dictionary<string, RateGridColumnSettings>> GetRatesGridColumnSettingsAsync();
+    public Task ResetRatesGridColumnSettingsAsync();
+    public Task PostRatesGridColumnSettingsAsync(Dictionary<string, RateGridColumnSettings> fullSettings);
+    public Task<GridDataProviderResult<RateDto>> GetRatesAsync(GridDataProviderRequest<RateDto> request);
 }
