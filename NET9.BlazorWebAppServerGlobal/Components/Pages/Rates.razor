@@ -13,7 +13,7 @@
 
 <RatesSettingsModal 
     @ref="settingsModal"
-    ColumnSettings="columnSettings"
+    ColumnSettings="gridSettings"
     OnOk="OnOkClick"
     OnCancel="OnCancelClick"
     OnReset="OnResetClick" />
@@ -26,7 +26,7 @@
       AllowPaging="true"
       AllowSorting="true"
       Responsive="true">
-    @if (columnSettings is null)
+    @if (gridSettings is null)
     {
         <PlaceholderContainer Animation="PlaceholderAnimation.Glow">
             <Placeholder Width="PlaceholderWidth.Col12" />
@@ -34,7 +34,7 @@
     }
     else
     {
-        @foreach (var settings in columnSettings.Values)
+        @foreach (var settings in gridSettings.ColumnSettings.Values)
         {
             <GridColumn TItem="RateDto"
                         HeaderText="@settings.Header"

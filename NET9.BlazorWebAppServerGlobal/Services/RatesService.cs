@@ -13,11 +13,11 @@ public class RatesService(ILocalStorageService localStorage) : IRatesService
     private const string StorageKey = "RatesGridColumnSettings";
 
 
-    public async Task<Dictionary<string, RateGridColumnSettings>> GetRatesGridColumnSettingsAsync()
+    public async Task<RateGridSettings> GetRatesGridColumnSettingsAsync()
     {
-        RateGridColumnSettings[] arr =
+        GridColumnSetting<RateDto>[] arr =
         [
-            new RateGridColumnSettings
+            new GridColumnSetting<RateDto>
             {
                 Name = "Code",
                 Header = "Code",
@@ -26,7 +26,7 @@ public class RatesService(ILocalStorageService localStorage) : IRatesService
                 Filterable = true,
                 Visible = true
             },
-            new RateGridColumnSettings
+            new GridColumnSetting<RateDto>
             {
                 Name = "IsDefRate",
                 Header = "Дефлятор",
@@ -35,7 +35,7 @@ public class RatesService(ILocalStorageService localStorage) : IRatesService
                 Filterable = true,
                 Visible = true
             },
-            new RateGridColumnSettings
+            new GridColumnSetting<RateDto>
             {
                 Name = "RateTypeName",
                 Header = "Тип ставки",
@@ -44,7 +44,7 @@ public class RatesService(ILocalStorageService localStorage) : IRatesService
                 Filterable = false,
                 Visible = true
             },
-            new RateGridColumnSettings
+            new GridColumnSetting<RateDto>
             {
                 Name = "NodeFromNameRu",
                 Header = "Отправление",
@@ -53,7 +53,7 @@ public class RatesService(ILocalStorageService localStorage) : IRatesService
                 Filterable = true,
                 Visible = true
             },
-            new RateGridColumnSettings
+            new GridColumnSetting<RateDto>
             {
                 Name = "NodeFromNameEn",
                 Header = "Отправление (En)",
@@ -62,7 +62,7 @@ public class RatesService(ILocalStorageService localStorage) : IRatesService
                 Filterable = true,
                 Visible = false
             },
-            new RateGridColumnSettings
+            new GridColumnSetting<RateDto>
             {
                 Name = "ProxyNodeNameRu",
                 Header = "Промежуточный",
@@ -71,7 +71,7 @@ public class RatesService(ILocalStorageService localStorage) : IRatesService
                 Filterable = true,
                 Visible = true
             },
-            new RateGridColumnSettings
+            new GridColumnSetting<RateDto>
             {
                 Name = "ProxyNodeNameEn",
                 Header = "Промежуточный (En)", 
@@ -80,7 +80,7 @@ public class RatesService(ILocalStorageService localStorage) : IRatesService
                 Filterable = true, 
                 Visible = false
             },
-            new RateGridColumnSettings
+            new GridColumnSetting<RateDto>
             {
                 Name = "NodeToNameRu",
                 Header = "Назначение",
@@ -89,7 +89,7 @@ public class RatesService(ILocalStorageService localStorage) : IRatesService
                 Filterable = true,
                 Visible = true
             },
-            new RateGridColumnSettings
+            new GridColumnSetting<RateDto>
             {
                 Name = "NodeToNameEn",
                 Header = "Назначение (En)",
@@ -98,7 +98,7 @@ public class RatesService(ILocalStorageService localStorage) : IRatesService
                 Filterable = true,
                 Visible = false
             },
-            new RateGridColumnSettings
+            new GridColumnSetting<RateDto>
             {
                 Name = "ProductGroupName",
                 Header = "Группа продуктов",
@@ -107,7 +107,7 @@ public class RatesService(ILocalStorageService localStorage) : IRatesService
                 Filterable = true,
                 Visible = true
             },
-            new RateGridColumnSettings
+            new GridColumnSetting<RateDto>
             {
                 Name = "StartDate",
                 Header = "Начало",
@@ -116,7 +116,7 @@ public class RatesService(ILocalStorageService localStorage) : IRatesService
                 Filterable = true,
                 Visible = true
             },
-            new RateGridColumnSettings
+            new GridColumnSetting < RateDto >
             {
                 Name = "EndDate",
                 Header = "Окончание",
@@ -125,7 +125,7 @@ public class RatesService(ILocalStorageService localStorage) : IRatesService
                 Filterable = true,
                 Visible = true
             },
-            new RateGridColumnSettings
+            new GridColumnSetting<RateDto>
             {
                 Name = "CurrencyCode",
                 Header = "Валюта",
@@ -134,7 +134,7 @@ public class RatesService(ILocalStorageService localStorage) : IRatesService
                 Filterable = false,
                 Visible = true
             },
-            new RateGridColumnSettings
+            new GridColumnSetting<RateDto>
             {
                 Name = "TotalCostTon",
                 Header = "За тонну",
@@ -143,7 +143,7 @@ public class RatesService(ILocalStorageService localStorage) : IRatesService
                 Filterable = false,
                 Visible = true
             },
-            new RateGridColumnSettings
+            new GridColumnSetting<RateDto>
             {
                 Name = "TotalCostTransport",
                 Header = "За ТС",
@@ -152,7 +152,7 @@ public class RatesService(ILocalStorageService localStorage) : IRatesService
                 Filterable = false,
                 Visible = false
             },
-            new RateGridColumnSettings
+            new GridColumnSetting<RateDto>
             {
                 Name = "CreationDate",
                 Header = "Дата создания",
@@ -161,7 +161,7 @@ public class RatesService(ILocalStorageService localStorage) : IRatesService
                 Filterable = true,
                 Visible = false
             },
-            new RateGridColumnSettings
+            new GridColumnSetting<RateDto>
             {
                 Name = "LastChangeDate",
                 Header = "Дата изменения",
@@ -181,17 +181,17 @@ public class RatesService(ILocalStorageService localStorage) : IRatesService
                 currentFullSetting.Visible = loadedSetting.Value;
             }
         }
-        return fullSettings;
+        return new RateGridSettings(fullSettings);
     }
 
     public async Task ResetRatesGridColumnSettingsAsync()
     {
-        await PostRatesGridColumnSettingsAsync(new Dictionary<string, RateGridColumnSettings>());
+        await PostRatesGridColumnSettingsAsync(new RateGridSettings());
     }
 
-    public async Task PostRatesGridColumnSettingsAsync(Dictionary<string, RateGridColumnSettings> fullSettings)
+    public async Task PostRatesGridColumnSettingsAsync(RateGridSettings fullSettings)
     {
-        var visibilitySettings = fullSettings.Values.ToDictionary(v => v.Name, v => v.Visible);
+        var visibilitySettings = fullSettings.ColumnSettings.Values.ToDictionary(v => v.Name, v => v.Visible);
         await localStorage.SetItemAsync(StorageKey, visibilitySettings);
     }
 

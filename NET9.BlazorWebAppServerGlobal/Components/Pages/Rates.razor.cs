@@ -9,7 +9,7 @@ namespace NET9.BlazorWebAppServerGlobal.Components.Pages;
 public partial class Rates
 {
     private RatesSettingsModal settingsModal = default!;
-    private Dictionary<string, RateGridColumnSettings>? columnSettings;
+    private RateGridSettings? gridSettings;
 
     [Inject]
     public IRatesService RatesService { get; set; } = default!;
@@ -22,7 +22,7 @@ public partial class Rates
 
     protected override async Task OnInitializedAsync()
     {
-        columnSettings = await RatesService.GetRatesGridColumnSettingsAsync();
+        gridSettings = await RatesService.GetRatesGridColumnSettingsAsync();
     }
 
     private async Task ShowSettingsAsync()
@@ -32,20 +32,23 @@ public partial class Rates
 
     private async Task OnOkClick()
     {
-        if (columnSettings is not null)
+        if (gridSettings is not null)
         {
-            await RatesService.PostRatesGridColumnSettingsAsync(columnSettings);
+            await RatesService.PostRatesGridColumnSettingsAsync(gridSettings);
         }
+        StateHasChanged();
     }
 
     private async Task OnCancelClick()
     {
-        columnSettings = await RatesService.GetRatesGridColumnSettingsAsync();
+        gridSettings = await RatesService.GetRatesGridColumnSettingsAsync();
+        StateHasChanged();
     }
 
     private async Task OnResetClick()
     {
         await RatesService.ResetRatesGridColumnSettingsAsync();
-        columnSettings = await RatesService.GetRatesGridColumnSettingsAsync();
+        gridSettings = await RatesService.GetRatesGridColumnSettingsAsync();
+        StateHasChanged();
     }
 }

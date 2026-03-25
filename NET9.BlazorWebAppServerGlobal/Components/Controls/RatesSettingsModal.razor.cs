@@ -9,7 +9,7 @@ public partial class RatesSettingsModal
     private Modal modal = default!;
 
     [Parameter]
-    public Dictionary<string, RateGridColumnSettings>? ColumnSettings { get; set; }
+    public RateGridSettings? ColumnSettings { get; set; }
 
     [Parameter]
     public EventCallback OnOk { get; set; }
@@ -23,11 +23,6 @@ public partial class RatesSettingsModal
     public async Task ShowAsync()
     {
         await modal.ShowAsync();
-    }
-
-    public async Task HideAsync()
-    {
-        await modal.HideAsync();
     }
 
     private async Task HandleOk()
