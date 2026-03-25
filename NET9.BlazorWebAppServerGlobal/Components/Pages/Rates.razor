@@ -1,5 +1,6 @@
 ﻿@page "/rates"
 @using NET9.BlazorWebAppServerGlobal.Models
+@using NET9.BlazorWebAppServerGlobal.Components.Controls
 
 <PageTitle>СВТ Blazor Demo - Rates</PageTitle>
 
@@ -9,22 +10,13 @@
 </div>
 
 
-<Modal @ref="modal" Title="Настройки">
-    <BodyTemplate>
-        @if (columnSettings is not null)
-        {
-            foreach (var settings in columnSettings.Values)
-            {
-                <Switch Label="@settings.Header" @bind-Value="@settings.Visible"></Switch>
-            }
-        }
-    </BodyTemplate>
-    <FooterTemplate>
-        <Button Color="ButtonColor.Primary" @onclick="OnOkClick">Ок</Button>
-        <Button Color="ButtonColor.Warning"  @onclick="OnResetClick">Сбросить</Button>
-        <Button Color="ButtonColor.Secondary" @onclick="OnCancelClick">Отмена</Button>
-    </FooterTemplate>
-</Modal>
+
+<RatesSettingsModal 
+    @ref="settingsModal"
+    ColumnSettings="columnSettings"
+    OnOk="OnOkClick"
+    OnCancel="OnCancelClick"
+    OnReset="OnResetClick" />
 
 
 <Grid TItem="RateDto"

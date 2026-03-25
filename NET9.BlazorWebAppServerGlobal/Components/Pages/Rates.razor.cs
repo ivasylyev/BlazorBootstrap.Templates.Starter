@@ -1,5 +1,6 @@
 ﻿using BlazorBootstrap;
 using Microsoft.AspNetCore.Components;
+using NET9.BlazorWebAppServerGlobal.Components.Controls;
 using NET9.BlazorWebAppServerGlobal.Models;
 using NET9.BlazorWebAppServerGlobal.Services;
 
@@ -7,7 +8,7 @@ namespace NET9.BlazorWebAppServerGlobal.Components.Pages;
 
 public partial class Rates
 {
-    private Modal modal = default!;
+    private RatesSettingsModal settingsModal = default!;
     private Dictionary<string, RateGridColumnSettings>? columnSettings;
 
     [Inject]
@@ -24,10 +25,9 @@ public partial class Rates
         columnSettings = await RatesService.GetRatesGridColumnSettingsAsync();
     }
 
-
     private async Task ShowSettingsAsync()
     {
-        await modal.ShowAsync();
+        await settingsModal.ShowAsync();
     }
 
     private async Task OnOkClick()
@@ -36,21 +36,16 @@ public partial class Rates
         {
             await RatesService.PostRatesGridColumnSettingsAsync(columnSettings);
         }
-
-        await modal.HideAsync();
     }
 
     private async Task OnCancelClick()
     {
         columnSettings = await RatesService.GetRatesGridColumnSettingsAsync();
-        await modal.HideAsync();
     }
 
     private async Task OnResetClick()
     {
         await RatesService.ResetRatesGridColumnSettingsAsync();
         columnSettings = await RatesService.GetRatesGridColumnSettingsAsync();
-
-        await modal.HideAsync();
     }
 }

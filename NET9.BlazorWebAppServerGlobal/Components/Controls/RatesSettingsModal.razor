@@ -1,0 +1,17 @@
+﻿<Modal @ref="modal" Title="Настройки">
+    <BodyTemplate>
+        @if (ColumnSettings is not null)
+        {
+            foreach (var settings in ColumnSettings.Values)
+            {
+                <Switch Label="@settings.Header" @bind-Value="@settings.Visible"></Switch>
+            }
+        }
+    </BodyTemplate>
+
+    <FooterTemplate>
+        <Button Color="ButtonColor.Primary" @onclick="HandleOk">Ок</Button>
+        <Button Color="ButtonColor.Warning" @onclick="HandleReset">Сбросить</Button>
+        <Button Color="ButtonColor.Secondary" @onclick="HandleCancel">Отмена</Button>
+    </FooterTemplate>
+</Modal>
