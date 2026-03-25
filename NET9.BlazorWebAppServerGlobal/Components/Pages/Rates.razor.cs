@@ -9,7 +9,7 @@ namespace NET9.BlazorWebAppServerGlobal.Components.Pages;
 public partial class Rates
 {
     private RatesSettingsModal settingsModal = default!;
-    private RateGridSettings? gridSettings;
+    private GridSettings<RateDto>? gridSettings;
 
     [Inject]
     public IRatesService RatesService { get; set; } = default!;
