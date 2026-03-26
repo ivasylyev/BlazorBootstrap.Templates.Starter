@@ -12,7 +12,7 @@ public partial class RatesSettingsModal
     public IReadOnlyCollection<IGridColumnSetting>? ColumnSettings { get; set; }
 
     [Parameter]
-    public EventCallback OnOk { get; set; }
+    public EventCallback<IReadOnlyCollection<IGridColumnSetting>> OnOk { get; set; }
 
     [Parameter]
     public EventCallback OnCancel { get; set; }
@@ -27,7 +27,11 @@ public partial class RatesSettingsModal
 
     private async Task HandleOk()
     {
-        await OnOk.InvokeAsync();
+        if (ColumnSettings is not null)
+        {
+            await OnOk.InvokeAsync(ColumnSettings);
+        }
+
         await modal.HideAsync();
     }
 

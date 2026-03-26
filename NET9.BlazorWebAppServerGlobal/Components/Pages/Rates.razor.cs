@@ -30,15 +30,18 @@ public partial class Rates
         await settingsModal.ShowAsync();
     }
 
-    private async Task OnOkClick()
+
+    private async Task OnOkClick(IReadOnlyCollection<IGridColumnSetting> settings)
     {
         if (gridSettings is not null)
         {
+            gridSettings.ApplyGridColumnSettings(settings);
+
             await RatesService.PostRatesGridColumnSettingsAsync(gridSettings);
         }
+
         StateHasChanged();
     }
-
     private async Task OnCancelClick()
     {
         gridSettings = await RatesService.GetRatesGridColumnSettingsAsync();

@@ -2,22 +2,44 @@
 
 namespace NET9.BlazorWebAppServerGlobal.Models;
 
-public class GridSettings<T>(List<GridColumnSetting<T>> columnSettings) : IReadOnlyCollection<IGridColumnSetting>
+public class GridSettings<T>(List<GridColumnSetting<T>> columnSettings) 
 {
     public GridSettings() : this(new List<GridColumnSetting<T>>())
     {
     }
-
     public List<GridColumnSetting<T>> ColumnSettings { get; set; } = columnSettings;
-    public int Count => ColumnSettings.Count;
-
-    public IEnumerator<IGridColumnSetting> GetEnumerator()
+    public IReadOnlyCollection<IGridColumnSetting> GetGridColumnSettingsCopy()
     {
-        return ColumnSettings.GetEnumerator();
+        return ColumnSettings
+            .Select(cs => new GridColumnSetting<T>
+            {
+                Name = cs.Name,
+                Header = cs.Header,
+                Visible = cs.Visible,
+                Filterable = cs.Filterable,
+
+                // намеренно не копируем:
+                DisplaySelector = default!,
+                SortSelector = default!
+            })
+            .Cast<IGridColumnSetting>()
+            .ToList()
+            .AsReadOnly();
     }
 
-    IEnumerator IEnumerable.GetEnumerator()
+    public void ApplyGridColumnSettings(IReadOnlyCollection<IGridColumnSetting> settings)
     {
-        return GetEnumerator();
+        var map = settings.ToDictionary(s => s.Name);
+
+        foreach (var column in ColumnSettings)
+        {
+            if (!map.TryGetValue(column.Name, out var incoming))
+                continue;
+
+            column.Header = incoming.Header;
+            column.Visible = incoming.Visible;
+            column.Filterable = incoming.Filterable;
+        }
     }
+
 }

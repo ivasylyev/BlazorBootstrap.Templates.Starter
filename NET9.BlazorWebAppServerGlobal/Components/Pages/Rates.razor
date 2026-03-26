@@ -13,7 +13,7 @@
 
 <RatesSettingsModal 
     @ref="settingsModal"
-    ColumnSettings="gridSettings"
+    ColumnSettings="gridSettings?.GetGridColumnSettingsCopy()"
     OnOk="OnOkClick"
     OnCancel="OnCancelClick"
     OnReset="OnResetClick" />
