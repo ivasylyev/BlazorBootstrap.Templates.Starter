@@ -1,6 +1,6 @@
 ﻿using BlazorBootstrap;
 
-namespace NET9.BlazorWebAppServerGlobal.Models;
+namespace NET9.BlazorWebAppServerGlobal.Models.Navigation;
 
 public class MenuItem
 {

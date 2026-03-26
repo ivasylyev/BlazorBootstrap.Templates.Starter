@@ -1,7 +1,9 @@
 ﻿using Blazored.LocalStorage;
-using NET9.BlazorWebAppServerGlobal.Models;
+using NET9.BlazorWebAppServerGlobal.Models.Dto;
+using NET9.BlazorWebAppServerGlobal.Models.Grid;
+using NET9.BlazorWebAppServerGlobal.Services.Shared;
 
-namespace NET9.BlazorWebAppServerGlobal.Services;
+namespace NET9.BlazorWebAppServerGlobal.Services.Rates;
 
 public class RatesGridSettingsService(ILocalStorageService localStorage) : GridSettingsServiceBase<RateDto>(localStorage)
 {

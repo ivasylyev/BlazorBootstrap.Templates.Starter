@@ -1,6 +1,6 @@
 ﻿using BlazorBootstrap;
 using Microsoft.AspNetCore.Components.Routing;
-using NET9.BlazorWebAppServerGlobal.Models;
+using NET9.BlazorWebAppServerGlobal.Models.Navigation;
 
 namespace NET9.BlazorWebAppServerGlobal.Components.Layout;
 

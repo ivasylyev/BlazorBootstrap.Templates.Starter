@@ -1,4 +1,4 @@
-﻿namespace NET9.BlazorWebAppServerGlobal.Services;
+﻿namespace NET9.BlazorWebAppServerGlobal.Utils;
 
 using Dapper;
 using System.Data;

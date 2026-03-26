@@ -1,4 +1,4 @@
-﻿namespace NET9.BlazorWebAppServerGlobal.Models;
+﻿namespace NET9.BlazorWebAppServerGlobal.Models.Dto;
 
 public class RateCountDto
 {

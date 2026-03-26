@@ -1,7 +1,7 @@
 ﻿using BlazorBootstrap;
-using NET9.BlazorWebAppServerGlobal.Models;
+using NET9.BlazorWebAppServerGlobal.Models.Dto;
 
-namespace NET9.BlazorWebAppServerGlobal.Services;
+namespace NET9.BlazorWebAppServerGlobal.Services.Rates;
 
 public interface IRatesDataService 
 {

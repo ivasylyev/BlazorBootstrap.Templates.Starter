@@ -1,6 +1,6 @@
 ﻿using System.Linq.Expressions;
 
-namespace NET9.BlazorWebAppServerGlobal.Models;
+namespace NET9.BlazorWebAppServerGlobal.Models.Grid;
 
 public class GridColumnSetting<T> : IGridColumnSetting
 {

@@ -3,10 +3,11 @@ using System.Data.SqlClient;
 using BlazorBootstrap;
 using Dapper;
 using Microsoft.Extensions.Options;
-using NET9.BlazorWebAppServerGlobal.Models;
+using NET9.BlazorWebAppServerGlobal.Models.Config;
+using NET9.BlazorWebAppServerGlobal.Models.Dto;
 using Newtonsoft.Json;
 
-namespace NET9.BlazorWebAppServerGlobal.Services;
+namespace NET9.BlazorWebAppServerGlobal.Services.Rates;
 
 public class RatesDataService(IOptions<DatabaseOptions> options) : IRatesDataService
 {

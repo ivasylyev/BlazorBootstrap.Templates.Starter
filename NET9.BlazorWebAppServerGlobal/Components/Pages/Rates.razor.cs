@@ -1,8 +1,10 @@
 ﻿using BlazorBootstrap;
 using Microsoft.AspNetCore.Components;
 using NET9.BlazorWebAppServerGlobal.Components.Controls;
-using NET9.BlazorWebAppServerGlobal.Models;
-using NET9.BlazorWebAppServerGlobal.Services;
+using NET9.BlazorWebAppServerGlobal.Models.Dto;
+using NET9.BlazorWebAppServerGlobal.Models.Grid;
+using NET9.BlazorWebAppServerGlobal.Services.Rates;
+using NET9.BlazorWebAppServerGlobal.Services.Shared;
 
 namespace NET9.BlazorWebAppServerGlobal.Components.Pages;
 

@@ -2,8 +2,11 @@
 using Blazored.LocalStorage;
 using Dapper;
 using NET9.BlazorWebAppServerGlobal.Components;
-using NET9.BlazorWebAppServerGlobal.Models;
-using NET9.BlazorWebAppServerGlobal.Services;
+using NET9.BlazorWebAppServerGlobal.Models.Config;
+using NET9.BlazorWebAppServerGlobal.Models.Dto;
+using NET9.BlazorWebAppServerGlobal.Services.Rates;
+using NET9.BlazorWebAppServerGlobal.Services.Shared;
+using NET9.BlazorWebAppServerGlobal.Utils;
 
 
 SqlMapper.AddTypeHandler(new SqlDateOnlyTypeHandler());

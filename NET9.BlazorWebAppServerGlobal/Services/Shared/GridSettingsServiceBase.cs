@@ -1,7 +1,7 @@
 ﻿using Blazored.LocalStorage;
-using NET9.BlazorWebAppServerGlobal.Models;
+using NET9.BlazorWebAppServerGlobal.Models.Grid;
 
-namespace NET9.BlazorWebAppServerGlobal.Services;
+namespace NET9.BlazorWebAppServerGlobal.Services.Shared;
 public abstract class GridSettingsServiceBase<T>(ILocalStorageService localStorage) : IGridSettingsService<T>
 {
     protected readonly ILocalStorageService LocalStorage = localStorage;
