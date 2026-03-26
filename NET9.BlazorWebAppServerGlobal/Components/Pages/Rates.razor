@@ -34,7 +34,7 @@
     }
     else
     {
-        @foreach (var settings in gridSettings.ColumnSettings.Values)
+        @foreach (var settings in gridSettings.ColumnSettings)
         {
             <GridColumn TItem="RateDto"
                         HeaderText="@settings.Header"

@@ -9,7 +9,7 @@ public partial class RatesSettingsModal
     private Modal modal = default!;
 
     [Parameter]
-    public IEnumerable<IGridColumnSetting>? ColumnSettings { get; set; }
+    public IReadOnlyCollection<IGridColumnSetting>? ColumnSettings { get; set; }
 
     [Parameter]
     public EventCallback OnOk { get; set; }

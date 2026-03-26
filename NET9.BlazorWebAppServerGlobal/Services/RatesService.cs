@@ -15,7 +15,7 @@ public class RatesService(ILocalStorageService localStorage) : IRatesService
 
     public async Task<GridSettings<RateDto>> GetRatesGridColumnSettingsAsync()
     {
-        GridColumnSetting<RateDto>[] arr =
+        List<GridColumnSetting<RateDto>> defaultSettings =
         [
             new GridColumnSetting<RateDto>
             {
@@ -171,17 +171,16 @@ public class RatesService(ILocalStorageService localStorage) : IRatesService
                 Visible = false
             }
         ];
-        var fullSettings = arr.ToDictionary(s => s.Name, s => s);
-      //  return fullSettings;
         var loadedSettings = await localStorage.GetItemAsync<Dictionary<string, bool>>(StorageKey) ?? new Dictionary<string, bool>();
-        foreach (var loadedSetting in loadedSettings)
+        foreach (var fullSetting in defaultSettings)
         {
-            if (fullSettings.TryGetValue(loadedSetting.Key, out var currentFullSetting))
+            if (loadedSettings.TryGetValue(fullSetting.Name, out var loadedSetting))
             {
-                currentFullSetting.Visible = loadedSetting.Value;
+                fullSetting.Visible = loadedSetting;
             }
         }
-        return new GridSettings<RateDto>(fullSettings);
+        
+        return new GridSettings<RateDto>(defaultSettings);
     }
 
     public async Task ResetRatesGridColumnSettingsAsync()
@@ -191,7 +190,7 @@ public class RatesService(ILocalStorageService localStorage) : IRatesService
 
     public async Task PostRatesGridColumnSettingsAsync(GridSettings<RateDto> fullSettings)
     {
-        var visibilitySettings = fullSettings.ColumnSettings.Values.ToDictionary(v => v.Name, v => v.Visible);
+        var visibilitySettings = fullSettings.ColumnSettings.ToDictionary(v => v.Name, v => v.Visible);
         await localStorage.SetItemAsync(StorageKey, visibilitySettings);
     }
 

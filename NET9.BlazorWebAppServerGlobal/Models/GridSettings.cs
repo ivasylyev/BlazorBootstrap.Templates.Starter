@@ -2,17 +2,18 @@
 
 namespace NET9.BlazorWebAppServerGlobal.Models;
 
-public class GridSettings<T>(Dictionary<string, GridColumnSetting<T>> columnSettings) :IEnumerable<IGridColumnSetting>
+public class GridSettings<T>(List<GridColumnSetting<T>> columnSettings) : IReadOnlyCollection<IGridColumnSetting>
 {
-    public GridSettings() 
-        : this(new Dictionary<string, GridColumnSetting<T>>())
+    public GridSettings() : this(new List<GridColumnSetting<T>>())
     {
     }
 
-    public Dictionary<string, GridColumnSetting<T>> ColumnSettings { get; set; } = columnSettings;
+    public List<GridColumnSetting<T>> ColumnSettings { get; set; } = columnSettings;
+    public int Count => ColumnSettings.Count;
+
     public IEnumerator<IGridColumnSetting> GetEnumerator()
     {
-        return ColumnSettings.Values.GetEnumerator();
+        return ColumnSettings.GetEnumerator();
     }
 
     IEnumerator IEnumerable.GetEnumerator()
