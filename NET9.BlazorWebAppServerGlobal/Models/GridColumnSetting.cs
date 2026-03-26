@@ -2,7 +2,7 @@
 
 namespace NET9.BlazorWebAppServerGlobal.Models;
 
-public class GridColumnSetting<T>
+public class GridColumnSetting<T> : IGridColumnSetting
 {
 
     public required string Name { get; set; }

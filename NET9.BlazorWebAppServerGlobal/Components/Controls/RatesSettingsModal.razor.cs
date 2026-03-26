@@ -9,7 +9,7 @@ public partial class RatesSettingsModal
     private Modal modal = default!;
 
     [Parameter]
-    public GridSettings<RateDto>? ColumnSettings { get; set; }
+    public IEnumerable<IGridColumnSetting>? ColumnSettings { get; set; }
 
     [Parameter]
     public EventCallback OnOk { get; set; }
