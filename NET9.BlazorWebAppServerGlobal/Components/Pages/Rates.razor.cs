@@ -10,19 +10,20 @@ public partial class Rates
 {
     private RatesSettingsModal settingsModal = default!;
     private GridSettings<RateDto>? gridSettings;
-
-    [Inject]
-    public IRatesService RatesService { get; set; } = default!;
+    [Inject] 
+    public IRatesDataService RatesDataService { get; set; } = default!;
+    [Inject] 
+    public IGridSettingsService<RateDto> GridSettingsService { get; set; } = default!;
 
     private async Task<GridDataProviderResult<RateDto>> RatesDataProvider(GridDataProviderRequest<RateDto> request)
     {
-        var result = await RatesService.GetRatesAsync(request);
+        var result = await RatesDataService.GetRatesAsync(request);
         return result;
     }
 
     protected override async Task OnInitializedAsync()
     {
-        gridSettings = await RatesService.GetGridSettingsAsync();
+        gridSettings = await GridSettingsService.GetGridSettingsAsync();
     }
 
     private async Task ShowSettingsAsync()
@@ -37,21 +38,21 @@ public partial class Rates
         {
             gridSettings.ApplyGridColumnSettings(settings);
 
-            await RatesService.SaveGridSettingsAsync(gridSettings);
+            await GridSettingsService.SaveGridSettingsAsync(gridSettings);
         }
 
         StateHasChanged();
     }
     private async Task OnCancelClick()
     {
-        gridSettings = await RatesService.GetGridSettingsAsync();
+        gridSettings = await GridSettingsService.GetGridSettingsAsync();
         StateHasChanged();
     }
 
     private async Task OnResetClick()
     {
-        await RatesService.ResetGridSettingsAsync();
-        gridSettings = await RatesService.GetGridSettingsAsync();
+        await GridSettingsService.ResetGridSettingsAsync();
+        gridSettings = await GridSettingsService.GetGridSettingsAsync();
         StateHasChanged();
     }
 }

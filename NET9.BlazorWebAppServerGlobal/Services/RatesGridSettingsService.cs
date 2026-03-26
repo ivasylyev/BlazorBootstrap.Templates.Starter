@@ -1,42 +1,11 @@
-﻿using System.Data;
-using System.Data.SqlClient;
-using Microsoft.Extensions.Options;
-using BlazorBootstrap;
-using Blazored.LocalStorage;
-using Dapper;
+﻿using Blazored.LocalStorage;
 using NET9.BlazorWebAppServerGlobal.Models;
-using Newtonsoft.Json;
 
 namespace NET9.BlazorWebAppServerGlobal.Services;
 
-public class RatesService(ILocalStorageService localStorage, IOptions<DatabaseOptions> options) : GridSettingsServiceBase<RateDto>(localStorage), IRatesService
+public class RatesGridSettingsService(ILocalStorageService localStorage) : GridSettingsServiceBase<RateDto>(localStorage)
 {
-    private readonly string connectionString = options.Value.MdmDb;
-
     protected override string StorageKey => "RatesGridColumnSettings";
-
-    public async Task<GridDataProviderResult<RateDto>> GetRatesAsync(GridDataProviderRequest<RateDto> request)
-    {
-        string? sortString = null;
-        var sortDirection = SortDirection.None;
-
-        if (request.Sorting is not null && request.Sorting.Any())
-        {
-            // Note: Multi column sorting is not supported at this moment
-            sortString = request.Sorting.FirstOrDefault()!.SortString;
-            sortDirection = request.Sorting.FirstOrDefault()!.SortDirection;
-        }
-
-        var result = await GetRatesFromDbAsync(request.Filters ?? new List<FilterItem>(), request.PageNumber, request.PageSize, sortString, sortDirection,
-            request.CancellationToken);
-        return await Task.FromResult(new GridDataProviderResult<RateDto>
-        {
-            Data = result.Item1,
-            TotalCount = result.Item2
-        });
-    }
-
-
     protected override List<GridColumnSetting<RateDto>> GetDefaultSettings()
     {
         return
@@ -195,41 +164,5 @@ public class RatesService(ILocalStorageService localStorage, IOptions<DatabaseOp
                 Visible = false
             }
         ];
-    }
-
-    private async Task<Tuple<IEnumerable<RateDto>, int>> GetRatesFromDbAsync(IEnumerable<FilterItem> filters, int pageNumber, int pageSize, string? sortKey,
-        SortDirection sortDirection, CancellationToken cancellationToken = default)
-    {
-        try
-        {
-            await using var connection = new SqlConnection(connectionString);
-            await connection.OpenAsync(cancellationToken);
-
-            var parameters = new DynamicParameters();
-            parameters.Add("PageNumber", pageNumber);
-            parameters.Add("PageSize", pageSize);
-            parameters.Add("SortKey", sortKey);
-            parameters.Add("SortDirection", sortDirection == SortDirection.Descending ? "DESC" : "ASC");
-            parameters.Add("PageNumber", pageNumber);
-            var jsonFilter = JsonConvert.SerializeObject(filters, new JsonSerializerSettings
-            {
-                StringEscapeHandling = StringEscapeHandling.Default
-            });
-            parameters.Add("Filter", jsonFilter);
-
-            await using var multi = await connection.QueryMultipleAsync(
-                "dbo.GetTransportRatesByFilters_v3",
-                parameters,
-                commandType: CommandType.StoredProcedure);
-
-            var rates = (await multi.ReadAsync<RateDto>()).ToList();
-            var count = (await multi.ReadFirstOrDefaultAsync<RateCountDto>())?.TotalCount ?? 0;
-            return new Tuple<IEnumerable<RateDto>, int>(rates, count);
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e);
-            throw;
-        }
     }
 }
