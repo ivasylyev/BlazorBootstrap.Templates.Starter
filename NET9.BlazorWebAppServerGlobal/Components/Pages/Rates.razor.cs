@@ -22,7 +22,7 @@ public partial class Rates
 
     protected override async Task OnInitializedAsync()
     {
-        gridSettings = await RatesService.GetRatesGridColumnSettingsAsync();
+        gridSettings = await RatesService.GetGridSettingsAsync();
     }
 
     private async Task ShowSettingsAsync()
@@ -37,21 +37,21 @@ public partial class Rates
         {
             gridSettings.ApplyGridColumnSettings(settings);
 
-            await RatesService.PostRatesGridColumnSettingsAsync(gridSettings);
+            await RatesService.SaveGridSettingsAsync(gridSettings);
         }
 
         StateHasChanged();
     }
     private async Task OnCancelClick()
     {
-        gridSettings = await RatesService.GetRatesGridColumnSettingsAsync();
+        gridSettings = await RatesService.GetGridSettingsAsync();
         StateHasChanged();
     }
 
     private async Task OnResetClick()
     {
-        await RatesService.ResetRatesGridColumnSettingsAsync();
-        gridSettings = await RatesService.GetRatesGridColumnSettingsAsync();
+        await RatesService.ResetGridSettingsAsync();
+        gridSettings = await RatesService.GetGridSettingsAsync();
         StateHasChanged();
     }
 }

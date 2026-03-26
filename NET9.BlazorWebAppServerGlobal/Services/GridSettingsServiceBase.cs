@@ -2,7 +2,7 @@
 using NET9.BlazorWebAppServerGlobal.Models;
 
 namespace NET9.BlazorWebAppServerGlobal.Services;
-public abstract class GridSettingsServiceBase<T>(ILocalStorageService localStorage)
+public abstract class GridSettingsServiceBase<T>(ILocalStorageService localStorage) : IGridSettingsService<T>
 {
     protected readonly ILocalStorageService LocalStorage = localStorage;
 

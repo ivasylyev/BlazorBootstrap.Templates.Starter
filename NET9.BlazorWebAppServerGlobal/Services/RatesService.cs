@@ -15,22 +15,6 @@ public class RatesService(ILocalStorageService localStorage, IOptions<DatabaseOp
 
     protected override string StorageKey => "RatesGridColumnSettings";
 
-    public Task<GridSettings<RateDto>> GetRatesGridColumnSettingsAsync()
-    {
-        return GetGridSettingsAsync();
-    }
-
-    public Task PostRatesGridColumnSettingsAsync(GridSettings<RateDto> settings)
-    {
-        return SaveGridSettingsAsync(settings);
-    }
-
-    public Task ResetRatesGridColumnSettingsAsync()
-    {
-        return ResetGridSettingsAsync();
-    }
-
-
     public async Task<GridDataProviderResult<RateDto>> GetRatesAsync(GridDataProviderRequest<RateDto> request)
     {
         string? sortString = null;
