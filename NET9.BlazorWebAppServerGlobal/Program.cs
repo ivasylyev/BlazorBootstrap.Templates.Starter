@@ -2,6 +2,7 @@
 using Blazored.LocalStorage;
 using Dapper;
 using NET9.BlazorWebAppServerGlobal.Components;
+using NET9.BlazorWebAppServerGlobal.Models;
 using NET9.BlazorWebAppServerGlobal.Services;
 
 
@@ -16,6 +17,7 @@ builder.Services.AddRazorComponents()
 builder.Services.AddHttpClient();
 builder.Services.AddBlazorBootstrap();
 builder.Services.AddBlazoredLocalStorage();
+builder.Services.Configure<DatabaseOptions>(builder.Configuration.GetSection("Database"));
 builder.Services.AddScoped<IRatesService, RatesService>();
 
 

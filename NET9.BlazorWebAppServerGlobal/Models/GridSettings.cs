@@ -1,13 +1,13 @@
-﻿using System.Collections;
+﻿namespace NET9.BlazorWebAppServerGlobal.Models;
 
-namespace NET9.BlazorWebAppServerGlobal.Models;
-
-public class GridSettings<T>(List<GridColumnSetting<T>> columnSettings) 
+public class GridSettings<T>(List<GridColumnSetting<T>> columnSettings)
 {
     public GridSettings() : this(new List<GridColumnSetting<T>>())
     {
     }
+
     public List<GridColumnSetting<T>> ColumnSettings { get; set; } = columnSettings;
+
     public IReadOnlyCollection<IGridColumnSetting> GetGridColumnSettingsCopy()
     {
         return ColumnSettings
@@ -41,5 +41,4 @@ public class GridSettings<T>(List<GridColumnSetting<T>> columnSettings)
             column.Filterable = incoming.Filterable;
         }
     }
-
 }

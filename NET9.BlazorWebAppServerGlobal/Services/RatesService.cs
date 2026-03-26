@@ -1,21 +1,61 @@
-﻿using BlazorBootstrap;
+﻿using System.Data;
+using System.Data.SqlClient;
+using Microsoft.Extensions.Options;
+using BlazorBootstrap;
 using Blazored.LocalStorage;
 using Dapper;
 using NET9.BlazorWebAppServerGlobal.Models;
 using Newtonsoft.Json;
-using System.Data;
-using System.Data.SqlClient;
+
 namespace NET9.BlazorWebAppServerGlobal.Services;
 
-public class RatesService(ILocalStorageService localStorage) : IRatesService
+public class RatesService(ILocalStorageService localStorage, IOptions<DatabaseOptions> options) : GridSettingsServiceBase<RateDto>(localStorage), IRatesService
 {
-    private const string _connectionString = "Server=S001ITD-0084;Database=mdm;Trusted_Connection=false;User ID=SVT;Password=SVTsrv1!;MultipleActiveResultSets=true;Application Name=mdm-api;Encrypt=False;TrustServerCertificate=True;Max Pool Size=1000;";
-    private const string StorageKey = "RatesGridColumnSettings";
+    private readonly string connectionString = options.Value.MdmDb;
 
+    protected override string StorageKey => "RatesGridColumnSettings";
 
-    public async Task<GridSettings<RateDto>> GetRatesGridColumnSettingsAsync()
+    public Task<GridSettings<RateDto>> GetRatesGridColumnSettingsAsync()
     {
-        List<GridColumnSetting<RateDto>> defaultSettings =
+        return GetGridSettingsAsync();
+    }
+
+    public Task PostRatesGridColumnSettingsAsync(GridSettings<RateDto> settings)
+    {
+        return SaveGridSettingsAsync(settings);
+    }
+
+    public Task ResetRatesGridColumnSettingsAsync()
+    {
+        return ResetGridSettingsAsync();
+    }
+
+
+    public async Task<GridDataProviderResult<RateDto>> GetRatesAsync(GridDataProviderRequest<RateDto> request)
+    {
+        string? sortString = null;
+        var sortDirection = SortDirection.None;
+
+        if (request.Sorting is not null && request.Sorting.Any())
+        {
+            // Note: Multi column sorting is not supported at this moment
+            sortString = request.Sorting.FirstOrDefault()!.SortString;
+            sortDirection = request.Sorting.FirstOrDefault()!.SortDirection;
+        }
+
+        var result = await GetRatesFromDbAsync(request.Filters ?? new List<FilterItem>(), request.PageNumber, request.PageSize, sortString, sortDirection,
+            request.CancellationToken);
+        return await Task.FromResult(new GridDataProviderResult<RateDto>
+        {
+            Data = result.Item1,
+            TotalCount = result.Item2
+        });
+    }
+
+
+    protected override List<GridColumnSetting<RateDto>> GetDefaultSettings()
+    {
+        return
         [
             new GridColumnSetting<RateDto>
             {
@@ -74,10 +114,10 @@ public class RatesService(ILocalStorageService localStorage) : IRatesService
             new GridColumnSetting<RateDto>
             {
                 Name = "ProxyNodeNameEn",
-                Header = "Промежуточный (En)", 
+                Header = "Промежуточный (En)",
                 DisplaySelector = dto => dto.ProxyNodeNameEn,
                 SortSelector = dto => dto.ProxyNodeNameEn,
-                Filterable = true, 
+                Filterable = true,
                 Visible = false
             },
             new GridColumnSetting<RateDto>
@@ -116,7 +156,7 @@ public class RatesService(ILocalStorageService localStorage) : IRatesService
                 Filterable = true,
                 Visible = true
             },
-            new GridColumnSetting < RateDto >
+            new GridColumnSetting<RateDto>
             {
                 Name = "EndDate",
                 Header = "Окончание",
@@ -171,54 +211,14 @@ public class RatesService(ILocalStorageService localStorage) : IRatesService
                 Visible = false
             }
         ];
-        var loadedSettings = await localStorage.GetItemAsync<Dictionary<string, bool>>(StorageKey) ?? new Dictionary<string, bool>();
-        foreach (var fullSetting in defaultSettings)
-        {
-            if (loadedSettings.TryGetValue(fullSetting.Name, out var loadedSetting))
-            {
-                fullSetting.Visible = loadedSetting;
-            }
-        }
-        
-        return new GridSettings<RateDto>(defaultSettings);
     }
 
-    public async Task ResetRatesGridColumnSettingsAsync()
-    {
-        await PostRatesGridColumnSettingsAsync(new GridSettings<RateDto>());
-    }
-
-    public async Task PostRatesGridColumnSettingsAsync(GridSettings<RateDto> fullSettings)
-    {
-        var visibilitySettings = fullSettings.ColumnSettings.ToDictionary(v => v.Name, v => v.Visible);
-        await localStorage.SetItemAsync(StorageKey, visibilitySettings);
-    }
-
-
-    public async Task<GridDataProviderResult<RateDto>> GetRatesAsync(GridDataProviderRequest<RateDto> request)
-    {
-        string? sortString = null;
-        var sortDirection = SortDirection.None;
-
-        if (request.Sorting is not null && request.Sorting.Any())
-        {
-            // Note: Multi column sorting is not supported at this moment
-            sortString = request.Sorting.FirstOrDefault()!.SortString;
-            sortDirection = request.Sorting.FirstOrDefault()!.SortDirection;
-        }
-        var result = await GetRatesFromDbAsync(request.Filters ?? new List<FilterItem>(), request.PageNumber, request.PageSize, sortString, sortDirection, request.CancellationToken);
-        return await Task.FromResult(new GridDataProviderResult<RateDto>
-        {
-            Data = result.Item1,
-            TotalCount = result.Item2
-        });
-    }
-
-    private async Task<Tuple<IEnumerable<RateDto>, int>> GetRatesFromDbAsync(IEnumerable<FilterItem> filters, int pageNumber, int pageSize, string? sortKey, SortDirection sortDirection, CancellationToken cancellationToken = default)
+    private async Task<Tuple<IEnumerable<RateDto>, int>> GetRatesFromDbAsync(IEnumerable<FilterItem> filters, int pageNumber, int pageSize, string? sortKey,
+        SortDirection sortDirection, CancellationToken cancellationToken = default)
     {
         try
         {
-            await using var connection = new SqlConnection(_connectionString);
+            await using var connection = new SqlConnection(connectionString);
             await connection.OpenAsync(cancellationToken);
 
             var parameters = new DynamicParameters();
@@ -240,7 +240,7 @@ public class RatesService(ILocalStorageService localStorage) : IRatesService
 
             var rates = (await multi.ReadAsync<RateDto>()).ToList();
             var count = (await multi.ReadFirstOrDefaultAsync<RateCountDto>())?.TotalCount ?? 0;
-            return new(rates, count);
+            return new Tuple<IEnumerable<RateDto>, int>(rates, count);
         }
         catch (Exception e)
         {
