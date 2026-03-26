@@ -25,7 +25,7 @@ public class RatesGridSettingsService(ILocalStorageService localStorage) : GridS
             {
                 Name = "IsDefRate",
                 Header = "Дефлятор",
-                DisplaySelector = dto => dto.IsDefRate,
+                DisplaySelector = dto => dto.IsDefRate  ? "Да":"Нет",
                 SortSelector = dto => dto.IsDefRate,
                 Filterable = true,
                 Visible = true
