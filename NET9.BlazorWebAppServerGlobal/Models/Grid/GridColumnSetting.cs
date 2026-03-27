@@ -8,8 +8,10 @@ public class GridColumnSetting<T> : IGridColumnSetting
     public required string Name { get; set; }
     public required string Header { get; set; }
     public bool Visible { get; set; }
-    public bool Filterable { get; set; } 
-    
+    public bool Filterable { get; set; }
+
+    public string FilterValue { get; set; } = null!;
+
 
     public required Func<T, object> DisplaySelector { get; set; }
 

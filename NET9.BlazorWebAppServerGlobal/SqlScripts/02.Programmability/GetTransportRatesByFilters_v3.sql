@@ -130,6 +130,7 @@ BEGIN
     SELECT
         tr.[Id],
         tr.[IsActive],
+        ~tr.[IsActive]   AS [IsArchive],
         tr.[Code],
         tr.[IsDefRate],
         CAST(tr.[StartDate] AS DATE) StartDate,
