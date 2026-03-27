@@ -89,4 +89,4 @@ SELECT
     and r.NodeFrom is not null
     and r.NodeTo is not null
 
-    SET IDENTITY_INSERT dbo.TransportRateSnapshot OFF
+SET IDENTITY_INSERT dbo.TransportRateSnapshot OFF

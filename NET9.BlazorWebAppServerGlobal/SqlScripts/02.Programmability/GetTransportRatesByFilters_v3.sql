@@ -16,7 +16,6 @@ GO
         {"PropertType":null,"PropertyName":"StartDate","Value":"2026-02-28","Operator":4,"StringComparison":5}]'
 
 
-
 */
 CREATE OR ALTER PROCEDURE dbo.GetTransportRatesByFilters_v3
     @PageNumber INT = 1,
@@ -66,7 +65,8 @@ BEGIN
            (N'NodeToNameRu', N'NVARCHAR'),
            (N'NodeToNameEn', N'NVARCHAR'),
            (N'RateTypeName', N'NVARCHAR'),
-           (N'ProductGroupName', N'NVARCHAR')
+           (N'ProductGroupName', N'NVARCHAR'),
+           (N'IsDefRate', N'BIT')
     
     INSERT INTO @FilteredColumns (ColumnName, ColumnType, ColumnValue, Operator)
     SELECT 
@@ -103,6 +103,15 @@ BEGIN
                     AND  tr.' + ColumnName + ' ' + dbo.fn_GetSqlOperator_v3(Operator) -- если функция вернет NULL, весь фильтр обнулится. И это правильное поведение
                     +''''+ ColumnValue + '''','')
                 ELSE ''
+                END
+
+            -- Логика для ФЛАГОВ
+            WHEN 'BIT' THEN 
+                CASE WHEN ColumnValue = 'True' THEN
+                    N'
+                    AND tr.' + ColumnName + ' = 1' 
+                ELSE  N'
+                    AND tr.' + ColumnName + ' = 0' 
                 END
 
             -- Логика по умолчанию для остальных типов
