@@ -1,4 +1,5 @@
-﻿@inherits LayoutComponentBase
+﻿@using NET9.BlazorWebAppServerGlobal.Components.Controls
+@inherits LayoutComponentBase
 <BlazorBootstrapLayout StickyHeader="true">
     <HeaderSection>
         <HeaderMenu />
@@ -9,7 +10,7 @@
     </ContentSection>
 
     <FooterSection>
-        Что-то внизу ...
+        <RatesLoadTime />
     </FooterSection>
 </BlazorBootstrapLayout>
 

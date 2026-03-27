@@ -164,7 +164,16 @@ public class RatesGridSettingsService(ILocalStorageService localStorage) : GridS
                 SortSelector = dto => dto.LastChangeDate,
                 Filterable = true,
                 Visible = false
-            }
+            },
+            new GridColumnSetting<RateDto>
+            {
+                Name = "IsActive",
+                Header = "Статус",
+                DisplaySelector = dto => dto.IsActive  ? "Актив":"Архив",
+                SortSelector = dto => dto.IsDefRate,
+                Filterable = true,
+                Visible = true
+            },
         ];
     }
 }

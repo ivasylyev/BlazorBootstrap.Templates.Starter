@@ -22,7 +22,6 @@ public partial class RatesSettingsModal
 
     public async Task ShowAsync()
     {
-        modal = null;
         await modal.ShowAsync();
     }
 

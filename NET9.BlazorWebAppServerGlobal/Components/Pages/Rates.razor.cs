@@ -5,6 +5,7 @@ using NET9.BlazorWebAppServerGlobal.Models.Dto;
 using NET9.BlazorWebAppServerGlobal.Models.Grid;
 using NET9.BlazorWebAppServerGlobal.Services.Rates;
 using NET9.BlazorWebAppServerGlobal.Services.Shared;
+using System.Diagnostics;
 
 namespace NET9.BlazorWebAppServerGlobal.Components.Pages;
 
@@ -19,9 +20,20 @@ public partial class Rates
     [Inject] 
     public IGridSettingsService<RateDto> GridSettingsService { get; set; } = default!;
 
+    [Inject] 
+    public PageTimingService PageTimingService { get; set; } = default!;
+
+
     private async Task<GridDataProviderResult<RateDto>> RatesDataProvider(GridDataProviderRequest<RateDto> request)
     {
+        var stopwatch = Stopwatch.StartNew();
+
         var result = await RatesDataService.GetRatesAsync(request);
+
+        stopwatch.Stop();
+
+        PageTimingService.SetLastRatesLoadDuration(stopwatch.Elapsed);
+
         return result;
     }
 

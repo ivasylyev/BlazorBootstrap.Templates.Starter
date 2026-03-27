@@ -3,9 +3,9 @@ GO
 
 
 
-CREATE NONCLUSTERED INDEX [ix_TransportRateSnapshot_StateId_IsDefRate] ON [dbo].TransportRateSnapshot
+CREATE NONCLUSTERED INDEX [ix_TransportRateSnapshot_IsActive_IsDefRate] ON [dbo].TransportRateSnapshot
 (
-	[StateId],
+	[IsActive],
     [IsDefRate]
 )
 GO
@@ -15,7 +15,7 @@ CREATE NONCLUSTERED  INDEX [ix_TransportRateSnapshot_code_include_id] ON [dbo].T
 (
 	[Code] ASC
 )
---INCLUDE([StateId])
+--INCLUDE([IsActive])
 GO
 
 
@@ -23,7 +23,7 @@ CREATE NONCLUSTERED  INDEX [ix_TransportRateSnapshot_NodeFromNameRu] ON [dbo].Tr
 (
 	[NodeFromNameRu] ASC
 )
---INCLUDE([StateId])
+--INCLUDE([IsActive])
 GO
 
 --drop  INDEX [ix_TransportRateSnapshot_NodeToNameRu] ON [dbo].TransportRateSnapshot
@@ -32,7 +32,7 @@ CREATE NONCLUSTERED  INDEX ix_TransportRateSnapshot_NodeToNameRu ON [dbo].Transp
 (
 	[NodeToNameRu] ASC
 )
---INCLUDE([StateId])
+--INCLUDE([IsActive])
 GO
 
 /*
@@ -41,7 +41,7 @@ CREATE NONCLUSTERED INDEX [ix_TransportRateSnapshot_NodeToNameRu] ON [dbo].Trans
 	[NodeToNameRu] ASC
 )
 INCLUDE([Id]
-      ,[StateId]
+      ,[IsActive]
       ,[Code]
       ,[IsDefRate]
       ,[StartDate]
@@ -73,6 +73,8 @@ INCLUDE([Id]
 GO
 
 */
+--DROP FULLTEXT INDEX ON dbo.TransportRateSnapshot ;
+--DROP FULLTEXT CATALOG ftCatalog ;
 CREATE FULLTEXT CATALOG ftCatalog AS DEFAULT;
 
 GO

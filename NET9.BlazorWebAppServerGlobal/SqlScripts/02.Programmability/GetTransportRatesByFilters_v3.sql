@@ -66,6 +66,7 @@ BEGIN
            (N'NodeToNameEn', N'NVARCHAR'),
            (N'RateTypeName', N'NVARCHAR'),
            (N'ProductGroupName', N'NVARCHAR'),
+           (N'IsActive', N'BIT'),
            (N'IsDefRate', N'BIT')
     
     INSERT INTO @FilteredColumns (ColumnName, ColumnType, ColumnValue, Operator)
@@ -120,7 +121,7 @@ BEGIN
         ''
     )
     FROM @FilteredColumns;
-    SET @WhereClause = CONCAT('WHERE tr.StateId = 1', @WhereClause)
+    SET @WhereClause = CONCAT('WHERE 1 = 1', @WhereClause)
 
     -- Основной SELECT с подставленными CTE и JOIN'ами
     SET @MainSQL = '
@@ -128,7 +129,7 @@ BEGIN
     ' + @CTEs + '
     SELECT
         tr.[Id],
-        tr.[StateId],
+        tr.[IsActive],
         tr.[Code],
         tr.[IsDefRate],
         CAST(tr.[StartDate] AS DATE) StartDate,

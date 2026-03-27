@@ -1,0 +1,25 @@
+﻿@using NET9.BlazorWebAppServerGlobal.Services.Shared
+@inject PageTimingService TimingService
+
+<div class="rates-load-time">
+    @if (TimingService.LastRatesLoadDuration > TimeSpan.Zero)
+    {
+        <span>Время загрузки ставок: @TimingService.LastRatesLoadDuration.TotalMilliseconds ms</span>
+    }
+    else
+    {
+        <span>Данные еще не загружены</span>
+    }
+</div>
+
+@code {
+    protected override void OnInitialized()
+    {
+        TimingService.OnChange += StateHasChanged;
+    }
+
+    public void Dispose()
+    {
+        TimingService.OnChange -= StateHasChanged;
+    }
+}
