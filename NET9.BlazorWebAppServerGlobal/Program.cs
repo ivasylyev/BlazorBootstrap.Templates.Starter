@@ -1,4 +1,4 @@
-
+п»ї
 using Blazored.LocalStorage;
 using Dapper;
 using NET9.BlazorWebAppServerGlobal.Components;
@@ -44,24 +44,8 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
 app.UseAntiforgery();
-
-app.Use(async (context, next) =>
-{
-    const string headerName = "X-Correlation-ID";
-
-    var correlationId = context.Request.Headers[headerName].FirstOrDefault()
-                        ?? Guid.NewGuid().ToString();
-
-    // прокидываем обратно клиенту
-    context.Response.Headers[headerName] = correlationId;
-
-    using (Serilog.Context.LogContext.PushProperty("CorrelationId", correlationId))
-    {
-        await next();
-    }
-});
+app.Use(Middleware.MiddlewareShortCorrelationId);
 app.MapStaticAssets();
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();

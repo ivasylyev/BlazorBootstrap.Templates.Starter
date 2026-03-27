@@ -1,0 +1,18 @@
+﻿using Dapper;
+
+namespace NET9.BlazorWebAppServerGlobal.Utils;
+
+public static class DapperLoggingExtensions
+{
+    public static Dictionary<string, object?> ToDictionary(this DynamicParameters parameters)
+    {
+        var dict = new Dictionary<string, object?>();
+
+        foreach (var name in parameters.ParameterNames)
+        {
+            dict[name] = parameters.Get<object?>(name);
+        }
+
+        return dict;
+    }
+}

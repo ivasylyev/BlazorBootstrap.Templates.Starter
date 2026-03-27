@@ -1,11 +1,13 @@
-﻿using System.Data;
-using System.Data.SqlClient;
-using BlazorBootstrap;
+﻿using BlazorBootstrap;
 using Dapper;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 using NET9.BlazorWebAppServerGlobal.Models.Config;
 using NET9.BlazorWebAppServerGlobal.Models.Dto;
+using NET9.BlazorWebAppServerGlobal.Utils;
 using Newtonsoft.Json;
+using System.Data;
+using System.Data.SqlClient;
 
 namespace NET9.BlazorWebAppServerGlobal.Services.Rates;
 
@@ -26,8 +28,7 @@ public class RatesDataService(IOptions<DatabaseOptions> options, ILogger<RatesDa
             sortDirection = request.Sorting.FirstOrDefault()!.SortDirection;
         }
 
-        logger.LogInformation("GetRatesAsync called. Page={Page}, Size={Size}, Sort={sortString}, Direction={sortDirection}",
-            request.PageNumber, request.PageSize, sortString, sortDirection);
+
 
         var result = await GetRatesFromDbAsync(request.Filters ?? new List<FilterItem>(), request.PageNumber, request.PageSize, sortString, sortDirection,
             request.CancellationToken);
@@ -58,10 +59,11 @@ public class RatesDataService(IOptions<DatabaseOptions> options, ILogger<RatesDa
             });
             parameters.Add("Filter", jsonFilter);
 
-            await using var multi = await connection.QueryMultipleAsync(
+            var loggingConnection = new LoggingDbConnection(connection, logger);
+            await using var multi = await loggingConnection.QueryMultipleAsync(
                 "dbo.GetTransportRatesByFilters_v3",
                 parameters,
-                commandType: CommandType.StoredProcedure);
+                CommandType.StoredProcedure);
 
             var rates = (await multi.ReadAsync<RateDto>()).ToList();
             var count = (await multi.ReadFirstOrDefaultAsync<RateCountDto>())?.TotalCount ?? 0;
