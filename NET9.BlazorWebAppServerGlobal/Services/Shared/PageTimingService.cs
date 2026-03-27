@@ -1,19 +1,18 @@
-﻿using System;
+﻿namespace NET9.BlazorWebAppServerGlobal.Services.Shared;
 
-namespace NET9.BlazorWebAppServerGlobal.Services.Shared
+public class PageTimingService
 {
-    public class PageTimingService
+    private TimeSpan loadDuration = TimeSpan.Zero;
+
+    public TimeSpan LoadDuration
     {
-        public TimeSpan LastRatesLoadDuration { get; private set; } = TimeSpan.Zero;
-
-        public void SetLastRatesLoadDuration(TimeSpan duration)
+        get => loadDuration;
+        set
         {
-            LastRatesLoadDuration = duration;
-            NotifyStateChanged();
+            loadDuration = value;
+            OnChange?.Invoke();
         }
-
-        public event Action? OnChange;
-
-        private void NotifyStateChanged() => OnChange?.Invoke();
     }
+
+    public event Action? OnChange;
 }

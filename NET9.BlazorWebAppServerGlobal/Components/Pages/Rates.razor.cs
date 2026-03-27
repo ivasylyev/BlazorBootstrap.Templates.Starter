@@ -5,36 +5,29 @@ using NET9.BlazorWebAppServerGlobal.Models.Dto;
 using NET9.BlazorWebAppServerGlobal.Models.Grid;
 using NET9.BlazorWebAppServerGlobal.Services.Rates;
 using NET9.BlazorWebAppServerGlobal.Services.Shared;
-using System.Diagnostics;
 
 namespace NET9.BlazorWebAppServerGlobal.Components.Pages;
 
 public partial class Rates
 {
-    private RatesSettingsModal settingsModal = default!;
     private GridSettings<RateDto>? gridSettings;
-    [Inject]
-    public ILogger<Rates> Logger { get; set; } = default!;
-    [Inject] 
-    public IRatesDataService RatesDataService { get; set; } = default!;
-    [Inject] 
-    public IGridSettingsService<RateDto> GridSettingsService { get; set; } = default!;
+    private RatesSettingsModal settingsModal = default!;
 
-    [Inject] 
-    public PageTimingService PageTimingService { get; set; } = default!;
+    [Inject] public ILogger<Rates> Logger { get; set; } = default!;
+
+    [Inject] public IRatesDataService RatesDataService { get; set; } = default!;
+
+    [Inject] public IGridSettingsService<RateDto> GridSettingsService { get; set; } = default!;
+
+    [Inject] public PageTimingService TimingService { get; set; } = default!;
 
 
     private async Task<GridDataProviderResult<RateDto>> RatesDataProvider(GridDataProviderRequest<RateDto> request)
     {
-        var stopwatch = Stopwatch.StartNew();
-
-        var result = await RatesDataService.GetRatesAsync(request);
-
-        stopwatch.Stop();
-
-        PageTimingService.SetLastRatesLoadDuration(stopwatch.Elapsed);
-
-        return result;
+        using (new StopwatchTransaction(TimingService))
+        {
+            return await RatesDataService.GetRatesAsync(request);
+        }
     }
 
     protected override async Task OnInitializedAsync()
@@ -61,6 +54,7 @@ public partial class Rates
 
         StateHasChanged();
     }
+
     private async Task OnCancelClick()
     {
         gridSettings = await GridSettingsService.GetGridSettingsAsync();

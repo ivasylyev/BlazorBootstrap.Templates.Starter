@@ -2,9 +2,12 @@
 @inject PageTimingService TimingService
 
 <div class="rates-load-time">
-    @if (TimingService.LastRatesLoadDuration > TimeSpan.Zero)
+    @if (TimingService.LoadDuration > TimeSpan.Zero)
     {
-        <span>Время загрузки ставок: @TimingService.LastRatesLoadDuration.TotalMilliseconds ms</span>
+        <span>
+            Время загрузки: 
+            @($"{TimingService.LoadDuration.TotalSeconds:F3} c")
+        </span>
     }
     else
     {
