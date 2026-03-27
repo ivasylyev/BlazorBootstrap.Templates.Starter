@@ -9,9 +9,10 @@ using Newtonsoft.Json;
 
 namespace NET9.BlazorWebAppServerGlobal.Services.Rates;
 
-public class RatesDataService(IOptions<DatabaseOptions> options) : IRatesDataService
+public class RatesDataService(IOptions<DatabaseOptions> options, ILogger<RatesDataService> logger) : IRatesDataService
 {
     private readonly string connectionString = options.Value.MdmDb;
+    
 
     public async Task<GridDataProviderResult<RateDto>> GetRatesAsync(GridDataProviderRequest<RateDto> request)
     {
@@ -24,6 +25,9 @@ public class RatesDataService(IOptions<DatabaseOptions> options) : IRatesDataSer
             sortString = request.Sorting.FirstOrDefault()!.SortString;
             sortDirection = request.Sorting.FirstOrDefault()!.SortDirection;
         }
+
+        logger.LogInformation("GetRatesAsync called. Page={Page}, Size={Size}, Sort={sortString}, Direction={sortDirection}",
+            request.PageNumber, request.PageSize, sortString, sortDirection);
 
         var result = await GetRatesFromDbAsync(request.Filters ?? new List<FilterItem>(), request.PageNumber, request.PageSize, sortString, sortDirection,
             request.CancellationToken);

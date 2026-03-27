@@ -7,11 +7,19 @@ using NET9.BlazorWebAppServerGlobal.Models.Dto;
 using NET9.BlazorWebAppServerGlobal.Services.Rates;
 using NET9.BlazorWebAppServerGlobal.Services.Shared;
 using NET9.BlazorWebAppServerGlobal.Utils;
+using Serilog;
 
 
 SqlMapper.AddTypeHandler(new SqlDateOnlyTypeHandler());
 
 var builder = WebApplication.CreateBuilder(args);
+
+Log.Logger = new LoggerConfiguration()
+    .ReadFrom.Configuration(builder.Configuration)
+    .CreateLogger();
+
+builder.Host.UseSerilog();
+builder.Services.AddHttpContextAccessor();
 
 // Add services to the container.
 builder.Services.AddRazorComponents()
@@ -20,10 +28,10 @@ builder.Services.AddRazorComponents()
 builder.Services.AddHttpClient();
 builder.Services.AddBlazorBootstrap();
 builder.Services.AddBlazoredLocalStorage();
+
 builder.Services.Configure<DatabaseOptions>(builder.Configuration.GetSection("Database"));
 builder.Services.AddScoped<IRatesDataService, RatesDataService>();
 builder.Services.AddScoped<IGridSettingsService<RateDto>, RatesGridSettingsService>();
-
 
 var app = builder.Build();
 
@@ -39,6 +47,21 @@ app.UseHttpsRedirection();
 
 app.UseAntiforgery();
 
+app.Use(async (context, next) =>
+{
+    const string headerName = "X-Correlation-ID";
+
+    var correlationId = context.Request.Headers[headerName].FirstOrDefault()
+                        ?? Guid.NewGuid().ToString();
+
+    // прокидываем обратно клиенту
+    context.Response.Headers[headerName] = correlationId;
+
+    using (Serilog.Context.LogContext.PushProperty("CorrelationId", correlationId))
+    {
+        await next();
+    }
+});
 app.MapStaticAssets();
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
