@@ -1,26 +1,27 @@
-﻿using BlazorBootstrap;
+﻿using System.Data;
+using System.Data.SqlClient;
+using BlazorBootstrap;
 using Dapper;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 using NET9.BlazorWebAppServerGlobal.Models.Config;
 using NET9.BlazorWebAppServerGlobal.Models.Dto;
 using NET9.BlazorWebAppServerGlobal.Utils;
 using Newtonsoft.Json;
-using System.Data;
-using System.Data.SqlClient;
 
 namespace NET9.BlazorWebAppServerGlobal.Services.Rates;
 
 public class RatesDataService(IOptions<DatabaseOptions> options, ILogger<RatesDataService> logger) : IRatesDataService
 {
     private readonly string connectionString = options.Value.MdmDb;
-    
+
 
     public async Task<GridDataProviderResult<RateDto>> GetRatesAsync(GridDataProviderRequest<RateDto> request)
     {
         string? sortString = null;
         var sortDirection = SortDirection.None;
 
+        // Бывает что request.Sorting пустой из-за того что компонент не успел инициализироваться
+        // ReSharper disable once ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
         if (request.Sorting is not null && request.Sorting.Any())
         {
             // Note: Multi column sorting is not supported at this moment
@@ -28,9 +29,13 @@ public class RatesDataService(IOptions<DatabaseOptions> options, ILogger<RatesDa
             sortDirection = request.Sorting.FirstOrDefault()!.SortDirection;
         }
 
+        // Бывает что request.Filters пустой из-за того что компонент не успел инициализироваться 
+        // ReSharper disable once ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
+        var filters = request.Filters is null
+            ? new List<FilterItem> { new(nameof(RateDto.IsArchive), "False", FilterOperator.Equals, StringComparison.InvariantCultureIgnoreCase)}
+            : request.Filters;
 
-
-        var result = await GetRatesFromDbAsync(request.Filters ?? new List<FilterItem>(), request.PageNumber, request.PageSize, sortString, sortDirection,
+        var result = await GetRatesFromDbAsync(filters, request.PageNumber, request.PageSize, sortString, sortDirection,
             request.CancellationToken);
         return await Task.FromResult(new GridDataProviderResult<RateDto>
         {

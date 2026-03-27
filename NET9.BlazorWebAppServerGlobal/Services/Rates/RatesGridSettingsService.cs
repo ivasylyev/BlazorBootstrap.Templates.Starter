@@ -172,7 +172,7 @@ public class RatesGridSettingsService(ILocalStorageService localStorage) : GridS
                 DisplaySelector = dto => dto.IsArchive  ? "Архив":"Актив",
                 SortSelector = dto => dto.IsArchive,
                 Filterable = true,
-                Visible = true,
+                Visible = false,
                 FilterValue = "False"
             },
         ];
