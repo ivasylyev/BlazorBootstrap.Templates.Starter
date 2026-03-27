@@ -1,6 +1,6 @@
 ﻿namespace NET9.BlazorWebAppServerGlobal.Utils;
 
-public static class Middleware
+public static class MiddlewareDecorator
 {
     public static async Task MiddlewareShortCorrelationId(HttpContext context, Func<Task> next)
     {

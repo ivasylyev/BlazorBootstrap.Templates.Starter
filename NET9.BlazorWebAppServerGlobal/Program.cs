@@ -45,7 +45,7 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseAntiforgery();
-app.Use(Middleware.MiddlewareShortCorrelationId);
+app.Use(MiddlewareDecorator.MiddlewareShortCorrelationId);
 app.MapStaticAssets();
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();

@@ -4,7 +4,7 @@ using Dapper;
 
 namespace NET9.BlazorWebAppServerGlobal.Utils;
 
-public class LoggingDbConnection(IDbConnection connection, ILogger logger)
+public class DbConnectionLogDecorator(IDbConnection connection, ILogger logger)
 {
     public async Task<SqlMapper.GridReader> QueryMultipleAsync(
         string sql,

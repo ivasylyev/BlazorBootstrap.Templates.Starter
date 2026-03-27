@@ -59,7 +59,7 @@ public class RatesDataService(IOptions<DatabaseOptions> options, ILogger<RatesDa
             });
             parameters.Add("Filter", jsonFilter);
 
-            var loggingConnection = new LoggingDbConnection(connection, logger);
+            var loggingConnection = new DbConnectionLogDecorator(connection, logger);
             await using var multi = await loggingConnection.QueryMultipleAsync(
                 "dbo.GetTransportRatesByFilters_v3",
                 parameters,

@@ -2,7 +2,7 @@
 
 namespace NET9.BlazorWebAppServerGlobal.Utils;
 
-public static class DapperLoggingExtensions
+public static class DapperLogExtensions
 {
     public static Dictionary<string, object?> ToDictionary(this DynamicParameters parameters)
     {
