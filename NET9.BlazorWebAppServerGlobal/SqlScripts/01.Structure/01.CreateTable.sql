@@ -6,7 +6,7 @@ GO
 
 CREATE TABLE dbo.TransportRateSnapshot (
     Id              BIGINT IDENTITY(1,1) NOT NULL,
-    IsActive        BIT NOT NULL,
+    IsArchive        BIT NOT NULL,
     IsDefRate       BIT NOT NULL,
     StartDate       DATETIME NOT NULL,
     EndDate         DATETIME NOT NULL,

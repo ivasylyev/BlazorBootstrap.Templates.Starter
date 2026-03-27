@@ -66,7 +66,7 @@ BEGIN
            (N'NodeToNameEn', N'NVARCHAR'),
            (N'RateTypeName', N'NVARCHAR'),
            (N'ProductGroupName', N'NVARCHAR'),
-           (N'IsActive', N'BIT'),
+           (N'IsArchive', N'BIT'),
            (N'IsDefRate', N'BIT')
     
     INSERT INTO @FilteredColumns (ColumnName, ColumnType, ColumnValue, Operator)
@@ -129,8 +129,7 @@ BEGIN
     ' + @CTEs + '
     SELECT
         tr.[Id],
-        tr.[IsActive],
-        ~tr.[IsActive]   AS [IsArchive],
+        tr.[IsArchive],
         tr.[Code],
         tr.[IsDefRate],
         CAST(tr.[StartDate] AS DATE) StartDate,

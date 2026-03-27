@@ -167,10 +167,10 @@ public class RatesGridSettingsService(ILocalStorageService localStorage) : GridS
             },
             new GridColumnSetting<RateDto>
             {
-                Name = "IsActive",
-                Header = "Статус",
-                DisplaySelector = dto => dto.IsActive  ? "Актив":"Архив",
-                SortSelector = dto => dto.IsActive,
+                Name = "IsArchive",
+                Header = "Архив",
+                DisplaySelector = dto => dto.IsArchive  ? "Архив":"Актив",
+                SortSelector = dto => dto.IsArchive,
                 Filterable = true,
                 Visible = true,
                 FilterValue = "False"

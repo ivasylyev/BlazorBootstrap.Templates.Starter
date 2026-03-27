@@ -38,7 +38,7 @@
         public string? CurrencyCode { get; set; }
         public string? CurrencyName { get; set; }
 
-        public bool IsActive { get; set; }
+        public bool IsArchive { get; set; }
     }
 
 }
