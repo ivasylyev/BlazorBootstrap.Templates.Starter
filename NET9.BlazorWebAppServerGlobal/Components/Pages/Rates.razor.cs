@@ -12,6 +12,8 @@ public partial class Rates
 {
     private RatesSettingsModal settingsModal = default!;
     private GridSettings<RateDto>? gridSettings;
+    [Inject]
+    public ILogger<Rates> Logger { get; set; } = default!;
     [Inject] 
     public IRatesDataService RatesDataService { get; set; } = default!;
     [Inject] 
@@ -25,6 +27,8 @@ public partial class Rates
 
     protected override async Task OnInitializedAsync()
     {
+        Logger.LogInformation("Rates page initializing");
+
         gridSettings = await GridSettingsService.GetGridSettingsAsync();
     }
 
