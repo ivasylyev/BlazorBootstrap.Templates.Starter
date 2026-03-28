@@ -6,7 +6,7 @@ using NET9.BlazorWebAppServerGlobal.Services.Shared;
 
 namespace NET9.BlazorWebAppServerGlobal.Services.Rates;
 
-public class RatesGridSettingsService(ILocalStorageService localStorage) : GridSettingsServiceBase<RateDto>(localStorage)
+public class RatesBaseGridSettingsService(ILocalStorageService localStorage) : BaseGridSettingsService<RateDto>(localStorage)
 {
     protected override string StorageKey => "RatesGridColumnSettings";
 

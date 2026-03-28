@@ -32,7 +32,7 @@ builder.Services.AddBlazoredLocalStorage();
 builder.Services.Configure<DatabaseOptions>(builder.Configuration.GetSection("Database"));
 builder.Services.AddScoped<PageTimingService>();
 builder.Services.AddScoped<IRatesDataService, RatesDataService>();
-builder.Services.AddScoped<IGridSettingsService<RateDto>, RatesGridSettingsService>();
+builder.Services.AddScoped<IGridSettingsService<RateDto>, RatesBaseGridSettingsService>();
 
 var app = builder.Build();
 
