@@ -1,17 +1,17 @@
 ﻿using Blazored.LocalStorage;
 using NET9.BlazorWebAppServerGlobal.Models.Grid;
+using NET9.BlazorWebAppServerGlobal.Models.Page;
 
 namespace NET9.BlazorWebAppServerGlobal.Services.Shared;
+
 public abstract class GridSettingsServiceBase<T>(ILocalStorageService localStorage) : IGridSettingsService<T>
 {
     protected readonly ILocalStorageService LocalStorage = localStorage;
 
     protected abstract string StorageKey { get; }
 
-    /// <summary>
-    /// Должен вернуть полный набор колонок (дефолт)
-    /// </summary>
-    protected abstract List<GridColumnSetting<T>> GetDefaultSettings();
+    public abstract PageSettings GetPageSettings();
+
 
     public async Task<GridSettings<T>> GetGridSettingsAsync()
     {
@@ -22,12 +22,8 @@ public abstract class GridSettingsServiceBase<T>(ILocalStorageService localStora
                      ?? new Dictionary<string, bool>();
 
         foreach (var column in defaultSettings)
-        {
             if (loaded.TryGetValue(column.Name, out var visible))
-            {
                 column.Visible = visible;
-            }
-        }
 
         return new GridSettings<T>(defaultSettings);
     }
@@ -44,4 +40,10 @@ public abstract class GridSettingsServiceBase<T>(ILocalStorageService localStora
     {
         await LocalStorage.RemoveItemAsync(StorageKey);
     }
+
+
+    /// <summary>
+    ///     Должен вернуть полный набор колонок (дефолт)
+    /// </summary>
+    protected abstract List<GridColumnSetting<T>> GetDefaultSettings();
 }

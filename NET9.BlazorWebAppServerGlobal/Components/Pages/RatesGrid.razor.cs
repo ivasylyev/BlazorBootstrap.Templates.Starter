@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Components;
 using NET9.BlazorWebAppServerGlobal.Components.Controls;
 using NET9.BlazorWebAppServerGlobal.Models.Dto;
 using NET9.BlazorWebAppServerGlobal.Models.Grid;
+using NET9.BlazorWebAppServerGlobal.Models.Page;
 using NET9.BlazorWebAppServerGlobal.Services.Rates;
 using NET9.BlazorWebAppServerGlobal.Services.Shared;
 
@@ -10,6 +11,7 @@ namespace NET9.BlazorWebAppServerGlobal.Components.Pages;
 
 public partial class RatesGrid
 {
+    private PageSettings? pageSettings;
     private GridSettings<RateDto>? gridSettings;
     private SettingsModal settingsModal = default!;
 
@@ -35,6 +37,7 @@ public partial class RatesGrid
         Logger.LogInformation("Rates page initializing");
 
         gridSettings = await GridSettingsService.GetGridSettingsAsync();
+        pageSettings = GridSettingsService.GetPageSettings();
     }
 
     private async Task ShowSettingsAsync()

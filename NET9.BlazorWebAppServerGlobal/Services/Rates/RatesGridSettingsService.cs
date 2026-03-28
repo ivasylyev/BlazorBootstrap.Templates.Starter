@@ -1,6 +1,7 @@
 ﻿using Blazored.LocalStorage;
 using NET9.BlazorWebAppServerGlobal.Models.Dto;
 using NET9.BlazorWebAppServerGlobal.Models.Grid;
+using NET9.BlazorWebAppServerGlobal.Models.Page;
 using NET9.BlazorWebAppServerGlobal.Services.Shared;
 
 namespace NET9.BlazorWebAppServerGlobal.Services.Rates;
@@ -8,6 +9,16 @@ namespace NET9.BlazorWebAppServerGlobal.Services.Rates;
 public class RatesGridSettingsService(ILocalStorageService localStorage) : GridSettingsServiceBase<RateDto>(localStorage)
 {
     protected override string StorageKey => "RatesGridColumnSettings";
+
+    public override PageSettings GetPageSettings()
+    {
+        return new PageSettings()
+        {
+            PageTitle = "СВТ Blazor Demo - Rates",
+            TopHeader = "Ставки"
+        };
+    }
+
     protected override List<GridColumnSetting<RateDto>> GetDefaultSettings()
     {
         return
@@ -25,7 +36,7 @@ public class RatesGridSettingsService(ILocalStorageService localStorage) : GridS
             {
                 Name = "IsDefRate",
                 Header = "Дефлятор",
-                DisplaySelector = dto => dto.IsDefRate  ? "Да":"Нет",
+                DisplaySelector = dto => dto.IsDefRate ? "Да" : "Нет",
                 SortSelector = dto => dto.IsDefRate,
                 Filterable = true,
                 Visible = true
@@ -169,12 +180,12 @@ public class RatesGridSettingsService(ILocalStorageService localStorage) : GridS
             {
                 Name = "IsArchive",
                 Header = "Архив",
-                DisplaySelector = dto => dto.IsArchive  ? "Архив":"Актив",
+                DisplaySelector = dto => dto.IsArchive ? "Архив" : "Актив",
                 SortSelector = dto => dto.IsArchive,
                 Filterable = true,
                 Visible = false,
                 FilterValue = "False"
-            },
+            }
         ];
     }
 }
