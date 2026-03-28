@@ -106,8 +106,8 @@ public abstract class BaseGridDataService<TItem>(
         parameters.Add("SortKey", sortKey);
         parameters.Add("SortDirection", sortDirection == SortDirection.Descending ? "DESC" : "ASC");
 
-        var jsonFilter = JsonConvert.SerializeObject(filters);
-        parameters.Add("Filter", jsonFilter);
+        var serializedFilter = JsonConvert.SerializeObject(filters);
+        parameters.Add("FilterJson", serializedFilter);
 
         return parameters;
     }
