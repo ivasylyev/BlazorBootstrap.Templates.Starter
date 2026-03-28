@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Components.Routing;
 using NET9.BlazorWebAppServerGlobal.Models.Navigation;
 
-namespace NET9.BlazorWebAppServerGlobal.Components.Layout;
+namespace NET9.BlazorWebAppServerGlobal.Components.Common;
 
 public partial class HeaderMenu
 {

@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Components;
 using NET9.BlazorWebAppServerGlobal.Models.Grid;
 
-namespace NET9.BlazorWebAppServerGlobal.Components.Controls;
+namespace NET9.BlazorWebAppServerGlobal.Components.Common;
 
 public partial class SettingsModal
 {

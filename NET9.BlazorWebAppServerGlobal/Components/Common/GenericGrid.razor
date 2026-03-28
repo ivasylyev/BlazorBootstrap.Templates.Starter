@@ -1,33 +1,27 @@
-﻿@page "/rates"
-@using NET9.BlazorWebAppServerGlobal.Components.Controls
-@using NET9.BlazorWebAppServerGlobal.Models.Dto
-
-<PageTitle>@pageSettings?.PageTitle</PageTitle>
+﻿@typeparam TItem
+<PageTitle>@PageSettings?.PageTitle</PageTitle>
 
 <div class="d-flex justify-content-between align-items-center">
-    <h1 class="mb-0">@pageSettings?.TopHeader</h1>
+    <h1 class="mb-0">@PageSettings?.TopHeader</h1>
     <Button Color="ButtonColor.Primary" @onclick="ShowSettingsAsync">Настройки</Button>
 </div>
 
+<SettingsModal @ref="settingsModal"
+               ColumnSettings="GridSettings?.GetGridColumnSettingsCopy()"
+               OnOk="OnOkClick"
+               OnCancel="OnCancelClick"
+               OnReset="OnResetClick" />
 
-
-<SettingsModal 
-    @ref="settingsModal"
-    ColumnSettings="gridSettings?.GetGridColumnSettingsCopy()"
-    OnOk="OnOkClick"
-    OnCancel="OnCancelClick"
-    OnReset="OnResetClick" />
-
-
-<Grid TItem="RateDto"
+<Grid TItem="TItem"
       Class="table table-hover table-bordered table-striped"
-      DataProvider="RatesDataProvider"
+      DataProvider="DataProvider"
       AllowFiltering="true"
       AllowPaging="true"
       AllowSorting="true"
       PaginationItemsTextFormat="{0} - {1} из {2} элементов"
       Responsive="true">
-    @if (gridSettings is null)
+
+    @if (GridSettings is null)
     {
         <PlaceholderContainer Animation="PlaceholderAnimation.Glow">
             <Placeholder Width="PlaceholderWidth.Col12" />
@@ -35,9 +29,9 @@
     }
     else
     {
-        @foreach (var settings in gridSettings.ColumnSettings)
+        @foreach (var settings in GridSettings.ColumnSettings)
         {
-            <GridColumn TItem="RateDto"
+            <GridColumn TItem="TItem"
                         HeaderText="@settings.Header"
                         PropertyName="@settings.Name"
                         SortString="@settings.Name"
@@ -49,6 +43,4 @@
             </GridColumn>
         }
     }
-    
 </Grid>
-       
