@@ -8,12 +8,12 @@ using NET9.BlazorWebAppServerGlobal.Services.Shared;
 
 namespace NET9.BlazorWebAppServerGlobal.Components.Pages;
 
-public partial class Rates
+public partial class RatesGrid
 {
     private GridSettings<RateDto>? gridSettings;
-    private RatesSettingsModal settingsModal = default!;
+    private SettingsModal settingsModal = default!;
 
-    [Inject] public ILogger<Rates> Logger { get; set; } = default!;
+    [Inject] public ILogger<RatesGrid> Logger { get; set; } = default!;
 
     [Inject] public IRatesDataService RatesDataService { get; set; } = default!;
 

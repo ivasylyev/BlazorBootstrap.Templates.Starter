@@ -4,7 +4,7 @@ using NET9.BlazorWebAppServerGlobal.Models.Grid;
 
 namespace NET9.BlazorWebAppServerGlobal.Components.Controls;
 
-public partial class RatesSettingsModal
+public partial class SettingsModal
 {
     private Modal modal = default!;
 
