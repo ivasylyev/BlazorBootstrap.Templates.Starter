@@ -1,6 +1,6 @@
 ﻿@page "/rates"
 @using NET9.BlazorWebAppServerGlobal.Models.Dto
-
+@inherits BaseGridPage<RateDto>
 
 <GenericGrid TItem="RateDto"
-             DataProvider="RatesDataProvider" />
+             DataProvider="DataProvider" />
