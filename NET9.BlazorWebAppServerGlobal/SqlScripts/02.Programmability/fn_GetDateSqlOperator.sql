@@ -3,7 +3,7 @@ GO
 
 
 
-CREATE OR ALTER FUNCTION dbo.fn_GetSqlOperator_v3 (@OperatorName NVARCHAR(50))
+CREATE OR ALTER FUNCTION dbo.fn_GetDateSqlOperator (@OperatorName NVARCHAR(50))
 RETURNS NVARCHAR(2)
 AS
 BEGIN

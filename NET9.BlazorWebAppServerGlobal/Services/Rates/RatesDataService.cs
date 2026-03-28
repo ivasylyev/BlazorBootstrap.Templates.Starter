@@ -12,7 +12,7 @@ public class RatesDataService(
     : BaseGridDataService<RateDto>(options, logger), IRatesDataService
 {
     protected override string StoredProcedureName
-        => "dbo.GetTransportRatesByFilters_v3";
+        => "dbo.GetTransportRates";
 
     public async Task<GridDataProviderResult<RateDto>> GetRatesAsync(GridDataProviderRequest<RateDto> request)
     {

@@ -1,11 +1,10 @@
 ﻿USE mdm
 GO
 
-
-
 /*
+Example:
 
- exec dbo.GetTransportRatesByFilters_v3 
+ exec dbo.GetTransportRates 
      @PageNumber=1,
      @PageSize=10,
      @SortKey=N'NodeToNameRu',
@@ -15,9 +14,8 @@ GO
         {"PropertType":null,"PropertyName":"ProductGroupName","Value":"полиоле","Operator":7,"StringComparison":5},
         {"PropertType":null,"PropertyName":"StartDate","Value":"2026-02-28","Operator":4,"StringComparison":5}]'
 
-
 */
-CREATE OR ALTER PROCEDURE dbo.GetTransportRatesByFilters_v3
+CREATE OR ALTER PROCEDURE dbo.GetTransportRates
     @PageNumber INT = 1,
     @PageSize INT = 20,
 
