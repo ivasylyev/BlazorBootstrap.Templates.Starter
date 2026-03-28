@@ -1,0 +1,73 @@
+﻿using BlazorBootstrap;
+using Microsoft.AspNetCore.Components;
+using NET9.BlazorWebAppServerGlobal.Components.Controls;
+using NET9.BlazorWebAppServerGlobal.Models.Dto;
+using NET9.BlazorWebAppServerGlobal.Models.Grid;
+using NET9.BlazorWebAppServerGlobal.Models.Page;
+using NET9.BlazorWebAppServerGlobal.Services.Rates;
+using NET9.BlazorWebAppServerGlobal.Services.Shared;
+
+namespace NET9.BlazorWebAppServerGlobal.Components.Pages;
+
+public partial class GenericGrid
+{
+    private PageSettings? pageSettings;
+    private GridSettings<RateDto>? gridSettings;
+    private SettingsModal settingsModal = default!;
+
+    [Inject] public ILogger<RatesGrid> Logger { get; set; } = default!;
+
+    [Inject] public IRatesDataService RatesDataService { get; set; } = default!;
+
+    [Inject] public IGridSettingsService<RateDto> GridSettingsService { get; set; } = default!;
+
+    [Inject] public PageTimingService TimingService { get; set; } = default!;
+
+
+    private async Task<GridDataProviderResult<RateDto>> RatesDataProvider(GridDataProviderRequest<RateDto> request)
+    {
+        using (new StopwatchTransaction(TimingService))
+        {
+            return await RatesDataService.GetRatesAsync(request);
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        Logger.LogInformation("Rates page initializing");
+
+        gridSettings = await GridSettingsService.GetGridSettingsAsync();
+        pageSettings = GridSettingsService.GetPageSettings();
+    }
+
+    private async Task ShowSettingsAsync()
+    {
+        await settingsModal.ShowAsync();
+    }
+
+
+    private async Task OnOkClick(IReadOnlyCollection<IGridColumnSetting> settings)
+    {
+        if (gridSettings is not null)
+        {
+            gridSettings.ApplyGridColumnSettings(settings);
+
+            await GridSettingsService.SaveGridSettingsAsync(gridSettings);
+        }
+
+        StateHasChanged();
+    }
+
+    private async Task OnCancelClick()
+    {
+        gridSettings = await GridSettingsService.GetGridSettingsAsync();
+        StateHasChanged();
+    }
+
+    private async Task OnResetClick()
+    {
+        await GridSettingsService.ResetGridSettingsAsync();
+        gridSettings = await GridSettingsService.GetGridSettingsAsync();
+        StateHasChanged();
+    }
+}
